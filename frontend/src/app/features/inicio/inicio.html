@@ -1,0 +1,33 @@
+<section class="geex-pagina">
+  <div class="bienvenida">
+    <div>
+      <h1>{{ saludo() }}</h1>
+      <p class="geex-texto-suave fecha">{{ hoy }} · {{ sesion.perfil()?.despachoActual?.nombre }}</p>
+    </div>
+  </div>
+
+  <h2 class="seccion">Disponible</h2>
+  <nav class="rejilla" aria-label="Apartados disponibles">
+    @for (modulo of disponibles; track modulo.clave) {
+      <a class="mosaico" [routerLink]="modulo.ruta">
+        <span class="mosaico__icono"><mat-icon aria-hidden="true">{{ modulo.icono }}</mat-icon></span>
+        <span class="mosaico__nombre">{{ modulo.nombre }}</span>
+        <span class="mosaico__descripcion">{{ modulo.descripcion }}</span>
+        <span class="mosaico__abrir">Abrir <mat-icon aria-hidden="true">arrow_forward</mat-icon></span>
+      </a>
+    }
+  </nav>
+
+  <h2 class="seccion">
+    Próximamente
+    <span class="seccion__nota">{{ pendientes.length }} apartados en preparación</span>
+  </h2>
+  <nav class="rejilla-compacta" aria-label="Apartados en preparación">
+    @for (modulo of pendientes; track modulo.clave) {
+      <a class="ficha" [routerLink]="['/modulo', modulo.clave]" [title]="modulo.descripcion">
+        <span class="ficha__icono"><mat-icon aria-hidden="true">{{ modulo.icono }}</mat-icon></span>
+        <span class="ficha__nombre">{{ modulo.nombre }}</span>
+      </a>
+    }
+  </nav>
+</section>

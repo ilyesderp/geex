@@ -1,0 +1,67 @@
+<geex-acceso-layout [ancha]="true">
+  <h2>Bienvenido a GEEX</h2>
+  <p class="geex-texto-suave subtitulo">
+    Vamos a crear tu despacho y tu cuenta de titular. Después podrás invitar al resto del equipo.
+  </p>
+
+  @if (error()) {
+    <geex-aviso>{{ error() }}</geex-aviso>
+  }
+
+  <form class="geex-formulario geex-formulario--2col" [formGroup]="formulario" (ngSubmit)="instalar()">
+    <h3 class="geex-col-completa geex-seccion-formulario">Despacho</h3>
+    <mat-form-field class="geex-col-completa">
+      <mat-label>Nombre del despacho</mat-label>
+      <input matInput id="nombreDespacho" formControlName="nombreDespacho" placeholder="Ej.: Lextran Abogados" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Municipio</mat-label>
+      <input matInput id="municipio" formControlName="municipio" />
+      <mat-hint>Sus festivos locales cuentan como días inhábiles</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Provincia</mat-label>
+      <input matInput id="provincia" formControlName="provincia" />
+    </mat-form-field>
+    <mat-form-field class="geex-col-completa">
+      <mat-label>Comunidad autónoma</mat-label>
+      <mat-select id="comunidad" formControlName="comunidadAutonoma">
+        @for (c of comunidades; track c.valor) {
+          <mat-option [value]="c.valor">{{ c.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <h3 class="geex-col-completa geex-seccion-formulario">Tu cuenta de titular</h3>
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput id="nombre" formControlName="nombre" autocomplete="given-name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Apellidos</mat-label>
+      <input matInput id="apellidos" formControlName="apellidos" autocomplete="family-name" />
+    </mat-form-field>
+    <mat-form-field class="geex-col-completa">
+      <mat-label>Correo electrónico</mat-label>
+      <input matInput id="email" type="email" formControlName="email" autocomplete="username" />
+      @if (formulario.controls.email.hasError('email')) {
+        <mat-error>Correo electrónico no válido</mat-error>
+      }
+    </mat-form-field>
+    <geex-campo-contrasena [control]="formulario.controls.contrasena" autocompletar="new-password"
+                           [ayuda]="'Mínimo ' + minimo + ' caracteres. Una frase es más segura'" />
+    <div>
+      <geex-campo-contrasena [control]="formulario.controls.repetir" etiqueta="Repetir contraseña" campoId="repetir"
+                             autocompletar="new-password" />
+      @if (formulario.errors?.['noCoinciden'] && formulario.controls.repetir.touched) {
+        <geex-aviso>Las contraseñas no coinciden.</geex-aviso>
+      }
+    </div>
+
+    <div class="geex-col-completa geex-acciones">
+      <button matButton="filled" type="submit" [disabled]="enviando()">
+        <mat-icon>check</mat-icon> Crear despacho y entrar
+      </button>
+    </div>
+  </form>
+</geex-acceso-layout>
