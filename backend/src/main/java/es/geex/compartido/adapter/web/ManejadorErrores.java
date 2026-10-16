@@ -57,7 +57,7 @@ class ManejadorErrores extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
-    ProblemDetail conflicto(OptimisticLockingFailureException e) {
+    ProblemDetail conflicto() {
         var detalle = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
                 "Otro usuario ha modificado estos datos mientras los editabas. Recarga la página e inténtalo de nuevo.");
         detalle.setTitle("Conflicto de edición");

@@ -43,6 +43,15 @@ describe('autenticacionInterceptor', () => {
     expect(servidor.expectOne('/api/auth/login').request.headers.has('Authorization')).toBe(false);
   });
 
+  it('añade la cabecera anti-CSRF a las llamadas de autenticación y solo a ellas', () => {
+    http.post('/api/auth/logout', null).subscribe();
+    http.post('/api/auth/cambiar-despacho', {}).subscribe();
+    http.get('/api/yo').subscribe();
+    expect(servidor.expectOne('/api/auth/logout').request.headers.get('X-GEEX-Refresco')).toBe('1');
+    expect(servidor.expectOne('/api/auth/cambiar-despacho').request.headers.get('X-GEEX-Refresco')).toBe('1');
+    expect(servidor.expectOne('/api/yo').request.headers.has('X-GEEX-Refresco')).toBe(false);
+  });
+
   it('ante un 401 renueva la sesión una vez y repite la petición con el token nuevo', () => {
     sesion.refrescar.mockImplementation(() => {
       token.set('token-2');

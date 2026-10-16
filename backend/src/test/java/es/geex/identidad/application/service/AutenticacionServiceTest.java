@@ -122,28 +122,28 @@ class AutenticacionServiceTest {
     private static final class Usuarios implements UsuarioRepository {
         final Map<UsuarioId, Usuario> datos = new HashMap<>();
 
-        public void guardar(Usuario u) { datos.put(u.id(), u); }
-        public Optional<Usuario> buscar(UsuarioId id) { return Optional.ofNullable(datos.get(id)); }
-        public Optional<Usuario> buscarPorEmail(String email) {
+        @Override public void guardar(Usuario u) { datos.put(u.id(), u); }
+        @Override public Optional<Usuario> buscar(UsuarioId id) { return Optional.ofNullable(datos.get(id)); }
+        @Override public Optional<Usuario> buscarPorEmail(String email) {
             return datos.values().stream().filter(u -> u.email().equals(email)).findFirst();
         }
-        public List<Usuario> buscarVarios(Collection<UsuarioId> ids) { return ids.stream().map(datos::get).toList(); }
+        @Override public List<Usuario> buscarVarios(Collection<UsuarioId> ids) { return ids.stream().map(datos::get).toList(); }
     }
 
     private static final class Membresias implements MembresiaRepository {
         final List<Membresia> datos = new ArrayList<>();
 
-        public void guardar(Membresia m) { datos.removeIf(x -> x.id().equals(m.id())); datos.add(m); }
-        public Optional<Membresia> buscar(UsuarioId u, DespachoId d) {
+        @Override public void guardar(Membresia m) { datos.removeIf(x -> x.id().equals(m.id())); datos.add(m); }
+        @Override public Optional<Membresia> buscar(UsuarioId u, DespachoId d) {
             return datos.stream().filter(m -> m.usuarioId().equals(u) && m.despachoId().equals(d)).findFirst();
         }
-        public List<Membresia> listarPorDespacho(DespachoId d) {
+        @Override public List<Membresia> listarPorDespacho(DespachoId d) {
             return datos.stream().filter(m -> m.despachoId().equals(d)).toList();
         }
-        public List<Membresia> listarActivasDeUsuario(UsuarioId u) {
+        @Override public List<Membresia> listarActivasDeUsuario(UsuarioId u) {
             return datos.stream().filter(m -> m.usuarioId().equals(u) && m.activa()).toList();
         }
-        public long contarTitularesActivos(DespachoId d) {
+        @Override public long contarTitularesActivos(DespachoId d) {
             return listarPorDespacho(d).stream().filter(m -> m.rol() == Rol.TITULAR && m.activa()).count();
         }
     }
@@ -152,38 +152,38 @@ class AutenticacionServiceTest {
         final Map<String, SesionRefresco> porHash = new HashMap<>();
         final Map<UUID, Instant> revocadas = new HashMap<>();
 
-        public void guardar(SesionRefresco s) { porHash.put(s.tokenHash(), s); }
-        public Optional<SesionRefresco> buscarPorHashParaActualizar(String hash) { return buscarPorHash(hash); }
-        public Optional<SesionRefresco> buscarPorHash(String hash) {
+        @Override public void guardar(SesionRefresco s) { porHash.put(s.tokenHash(), s); }
+        @Override public Optional<SesionRefresco> buscarPorHashParaActualizar(String hash) { return buscarPorHash(hash); }
+        @Override public Optional<SesionRefresco> buscarPorHash(String hash) {
             return Optional.ofNullable(porHash.get(hash)).map(s -> revocadas.containsKey(s.familiaId())
                     ? SesionRefresco.reconstruir(s.id(), s.familiaId(), s.usuarioId(), s.despachoId(), s.tokenHash(),
                     s.versionToken(), s.expiraEn(), s.usadoEn(), revocadas.get(s.familiaId()), s.creadoEn(), s.ip(),
                     s.agente())
                     : s);
         }
-        public void revocarFamilia(UUID familia, Instant ahora) { revocadas.put(familia, ahora); }
-        public void revocarDeUsuario(UsuarioId u, Instant ahora) {
+        @Override public void revocarFamilia(UUID familia, Instant ahora) { revocadas.put(familia, ahora); }
+        @Override public void revocarDeUsuario(UsuarioId u, Instant ahora) {
             porHash.values().stream().filter(s -> s.usuarioId().equals(u)).forEach(s -> revocadas.put(s.familiaId(), ahora));
         }
-        public void revocarDeUsuarioEnDespacho(UsuarioId u, DespachoId d, Instant ahora) { revocarDeUsuario(u, ahora); }
+        @Override public void revocarDeUsuarioEnDespacho(UsuarioId u, DespachoId d, Instant ahora) { revocarDeUsuario(u, ahora); }
     }
 
     private static final class CifradorFalso implements CifradorContrasenas {
-        public String cifrar(String c) { return "h:" + c; }
-        public boolean coincide(String c, String hash) { return hash != null && hash.equals("h:" + c); }
+        @Override public String cifrar(String c) { return "h:" + c; }
+        @Override public boolean coincide(String c, String hash) { return hash != null && hash.equals("h:" + c); }
     }
 
     private static final class EmisorFalso implements EmisorTokensAcceso {
-        public TokenAcceso emitir(DatosToken d, Instant ahora) {
+        @Override public TokenAcceso emitir(DatosToken d, Instant ahora) {
             return new TokenAcceso("jwt:" + d.usuario() + ":" + d.rol(), ahora.plus(Duration.ofMinutes(15)));
         }
     }
 
     private static final class SinContexto implements ContextoUsuario {
-        public UsuarioId usuarioId() { throw new UnsupportedOperationException(); }
-        public DespachoId despachoId() { throw new UnsupportedOperationException(); }
-        public Rol rol() { throw new UnsupportedOperationException(); }
-        public boolean esSuperadmin() { return false; }
-        public boolean tienePermiso(Permiso permiso) { return false; }
+        @Override public UsuarioId usuarioId() { throw new UnsupportedOperationException(); }
+        @Override public DespachoId despachoId() { throw new UnsupportedOperationException(); }
+        @Override public Rol rol() { throw new UnsupportedOperationException(); }
+        @Override public boolean esSuperadmin() { return false; }
+        @Override public boolean tienePermiso(Permiso permiso) { return false; }
     }
 }

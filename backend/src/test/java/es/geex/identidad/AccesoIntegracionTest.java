@@ -125,6 +125,15 @@ class AccesoIntegracionTest extends PruebaIntegracion {
     }
 
     @Test
+    void una_peticion_con_la_cookie_de_refresco_sin_la_cabecera_propia_se_rechaza() {
+        var cookie = iniciarSesion(titular).cookieRefresco();
+        var sinCabecera = post("/api/auth/logout", null, null, cookie);
+        assertThat(sinCabecera.estado()).as("posible CSRF: falta X-GEEX-Refresco").isEqualTo(403);
+        assertThat(sinCabecera.codigoError()).isEqualTo("CABECERA_REQUERIDA");
+        assertThat(refrescar(cookie).estado()).as("la sesión sigue abierta").isEqualTo(200);
+    }
+
+    @Test
     void la_actividad_queda_en_la_auditoria() {
         post("/api/usuarios", sesionTitular.token(),
                 "{\"email\":\"aud@despacho.test\",\"nombre\":\"Eva\",\"apellidos\":\"Admin\",\"rol\":\"ADMINISTRATIVO\"}");

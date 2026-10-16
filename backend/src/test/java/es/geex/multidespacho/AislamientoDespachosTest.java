@@ -89,23 +89,32 @@ class AislamientoDespachosTest extends PruebaIntegracion {
 
     @Test
     void la_base_de_datos_impide_leer_o_escribir_filas_de_otro_despacho() throws SQLException {
-        try (var c = conexionAplicacion(); var s = c.createStatement()) {
-            s.execute("select set_config('app.despacho_id', '" + despachoA + "', false)");
-
-            try (var rs = s.executeQuery("select count(*) from valores_catalogo where despacho_id = '" + despachoB + "'")) {
-                rs.next();
-                assertThat(rs.getLong(1)).as("filas de B visibles con el contexto de A").isZero();
+        try (var c = conexionAplicacion()) {
+            try (var contexto = c.prepareStatement("select set_config('app.despacho_id', ?, false)")) {
+                contexto.setString(1, despachoA.toString());
+                contexto.execute();
             }
-            try (var rs = s.executeQuery("select count(*) from valores_catalogo")) {
+            try (var consulta = c.prepareStatement("select count(*) from valores_catalogo where despacho_id = ?")) {
+                consulta.setObject(1, despachoB.valor());
+                try (var rs = consulta.executeQuery()) {
+                    rs.next();
+                    assertThat(rs.getLong(1)).as("filas de B visibles con el contexto de A").isZero();
+                }
+            }
+            try (var s = c.createStatement(); var rs = s.executeQuery("select count(*) from valores_catalogo")) {
                 rs.next();
                 assertThat(rs.getLong(1)).as("A sí ve sus propias listas").isPositive();
             }
-            assertThatThrownBy(() -> s.executeUpdate("""
+            try (var insercion = c.prepareStatement("""
                     insert into valores_catalogo (id, despacho_id, catalogo_codigo, codigo, etiqueta, orden)
-                    values ('%s', '%s', 'ESTADO_CIVIL', 'INTRUSO', 'Intruso', 99)""".formatted(UUID.randomUUID(), despachoB)))
-                    .as("insertar en otro despacho viola la política RLS")
-                    .isInstanceOf(SQLException.class)
-                    .hasMessageContaining("row-level security");
+                    values (?, ?, 'ESTADO_CIVIL', 'INTRUSO', 'Intruso', 99)""")) {
+                insercion.setObject(1, UUID.randomUUID());
+                insercion.setObject(2, despachoB.valor());
+                assertThatThrownBy(insercion::executeUpdate)
+                        .as("insertar en otro despacho viola la política RLS")
+                        .isInstanceOf(SQLException.class)
+                        .hasMessageContaining("row-level security");
+            }
         }
     }
 

@@ -43,6 +43,7 @@ import tools.jackson.databind.json.JsonMapper;
 public abstract class PruebaIntegracion {
 
     protected static final JsonMapper JSON = JsonMapper.builder().build();
+    private static final SecureRandom ALEATORIO = new SecureRandom();
     private static final String CONTRASENA_APP = aleatorio(24);
 
     protected static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(
@@ -158,6 +159,12 @@ public abstract class PruebaIntegracion {
                 .POST(json == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(json)));
     }
 
+    /** POST que envía la cookie de refresco tal cual, sin la cabecera propia. */
+    protected Respuesta post(String ruta, String token, String json, String cookie) {
+        return enviar(peticion(ruta, token).header("Content-Type", "application/json").header("Cookie", cookie)
+                .POST(json == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(json)));
+    }
+
     protected Respuesta put(String ruta, String token, String json) {
         return enviar(peticion(ruta, token).header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(json)));
@@ -222,7 +229,7 @@ public abstract class PruebaIntegracion {
 
     private static String aleatorio(int bytes) {
         byte[] b = new byte[bytes];
-        new SecureRandom().nextBytes(b);
+        ALEATORIO.nextBytes(b);
         return Base64.getEncoder().encodeToString(b);
     }
 }
