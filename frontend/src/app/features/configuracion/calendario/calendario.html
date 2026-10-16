@@ -56,7 +56,8 @@
           <th mat-header-cell *matHeaderCellDef class="col-acciones"><span class="cdk-visually-hidden">Acciones</span></th>
           <td mat-cell *matCellDef="let dia" class="col-acciones">
             @if (dia.editable) {
-              <button matIconButton type="button" class="peligro" (click)="eliminar(dia)" aria-label="Eliminar festivo">
+              <button matIconButton type="button" class="eliminar" (click)="eliminar(dia)" aria-label="Eliminar festivo"
+                      matTooltip="Eliminar festivo">
                 <mat-icon>delete</mat-icon>
               </button>
             }

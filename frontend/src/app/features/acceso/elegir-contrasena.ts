@@ -47,7 +47,7 @@ import { AccesoLayout } from './acceso-layout';
           @if (formulario.errors?.['noCoinciden'] && formulario.controls.repetir.touched) {
             <geex-aviso>Las contraseñas no coinciden.</geex-aviso>
           }
-          <button matButton="filled" type="submit" [disabled]="formulario.invalid || enviando()">
+          <button matButton="filled" type="submit" [disabled]="enviando()">
             <mat-icon>check</mat-icon> {{ activar ? 'Activar cuenta y entrar' : 'Guardar contraseña' }}
           </button>
         </form>
@@ -104,7 +104,11 @@ export class ElegirContrasena implements OnInit {
 
   async guardar(): Promise<void> {
     const token = this.token();
-    if (!token || this.formulario.invalid) {
+    if (!token) {
+      return;
+    }
+    if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
       return;
     }
     this.enviando.set(true);

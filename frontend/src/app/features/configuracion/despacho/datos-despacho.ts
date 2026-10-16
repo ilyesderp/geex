@@ -12,14 +12,16 @@ import { DespachoVista } from '../../../api/generated/model/despachoVista';
 import { COMUNIDADES, ComunidadAutonoma } from '../../../core/comunidades';
 import { SesionService } from '../../../core/sesion/sesion.service';
 import { AvisosService } from '../../../core/ui/avisos.service';
+import { avisarAlCerrarPestana, ConCambiosSinGuardar } from '../../../core/ui/cambios-sin-guardar';
 
 @Component({
   selector: 'geex-datos-despacho',
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
     MatProgressBarModule],
   templateUrl: './datos-despacho.html',
+  host: { '(window:beforeunload)': 'alCerrarPestana($event)' },
 })
-export class DatosDespacho implements OnInit {
+export class DatosDespacho implements OnInit, ConCambiosSinGuardar {
   private readonly api = inject(DespachoService);
   private readonly avisos = inject(AvisosService);
   protected readonly sesion = inject(SesionService);
@@ -28,6 +30,8 @@ export class DatosDespacho implements OnInit {
   protected readonly cargando = signal(true);
   protected readonly guardando = signal(false);
   protected readonly puedeEditar = this.sesion.tienePermiso('CONFIGURACION_GESTIONAR');
+  /** Versión cargada: el servidor rechaza el guardado si otra persona lo modificó entretanto. */
+  private version = 0;
 
   protected readonly formulario = inject(NonNullableFormBuilder).group({
     nombre: ['', [Validators.required, Validators.maxLength(150)]],
@@ -73,6 +77,7 @@ export class DatosDespacho implements OnInit {
         telefono: d.telefono || undefined,
         email: d.email || undefined,
         web: d.web || undefined,
+        version: this.version,
       })));
       await this.sesion.recargarPerfil();
       this.avisos.exito('Datos del despacho guardados');
@@ -83,7 +88,16 @@ export class DatosDespacho implements OnInit {
     }
   }
 
+  tieneCambiosSinGuardar(): boolean {
+    return this.formulario.dirty && !this.guardando();
+  }
+
+  protected alCerrarPestana(evento: BeforeUnloadEvent): void {
+    avisarAlCerrarPestana(evento, this.tieneCambiosSinGuardar());
+  }
+
   private cargar(d: DespachoVista): void {
+    this.version = d.version;
     this.formulario.reset({
       nombre: d.nombre,
       razonSocial: d.razonSocial ?? '',

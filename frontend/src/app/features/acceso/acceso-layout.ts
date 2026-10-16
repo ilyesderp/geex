@@ -40,11 +40,14 @@ import { Logo } from '../../layout/logo';
     .tarjeta { width: 100%; max-width: 460px; background: #fff; border: 1px solid var(--geex-borde);
       border-radius: 16px; box-shadow: var(--geex-sombra-elevada); padding: 36px 32px; }
     .tarjeta--ancha { max-width: 680px; }
+    /* Móvil: cabecera de marca compacta para que el formulario quede a la vista sin desplazarse */
     @media (max-width: 900px) {
-      .acceso { grid-template-columns: 1fr; }
-      .marca { padding: 24px; gap: 16px; }
-      .lema h1 { font-size: 1.4rem; }
-      .ventajas { display: none; }
+      .acceso { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .marca { padding: 20px 20px 22px; gap: 12px; }
+      .lema h1 { font-size: 1.15rem; margin: 0; }
+      .lema p, .ventajas { display: none; }
+      .panel { place-items: start center; padding: 20px 16px 32px; }
+      .tarjeta { padding: 24px 20px; }
     }
   `,
 })

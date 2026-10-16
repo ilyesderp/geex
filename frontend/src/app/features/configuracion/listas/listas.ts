@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
@@ -22,7 +23,7 @@ type TipoCatalogo = ResumenCatalogo['tipo'];
 @Component({
   selector: 'geex-listas',
   imports: [FormsModule, CdkDropList, CdkDrag, CdkDragHandle, MatButtonModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatProgressBarModule, MatSlideToggleModule, MatTooltipModule],
+    MatInputModule, MatProgressBarModule, MatSelectModule, MatSlideToggleModule, MatTooltipModule],
   templateUrl: './listas.html',
   styleUrl: './listas.scss',
 })
@@ -72,6 +73,13 @@ export class Listas implements OnInit {
     this.filtro.set('');
     this.editando.set(null);
     await this.cargarValores();
+  }
+
+  protected async seleccionarTipo(tipo: ResumenCatalogo['tipo']): Promise<void> {
+    const catalogo = this.catalogos().find((c) => c.tipo === tipo);
+    if (catalogo) {
+      await this.seleccionar(catalogo);
+    }
   }
 
   protected async anadir(): Promise<void> {

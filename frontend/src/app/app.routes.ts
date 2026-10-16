@@ -6,6 +6,7 @@ import {
   soloSinInstalar,
   soloSinSesion,
 } from './core/sesion/guardas';
+import { confirmarSalidaSinGuardar } from './core/ui/cambios-sin-guardar';
 
 export const routes: Routes = [
   // ── Acceso (sin sesión) ───────────────────────────────────────────────────
@@ -61,6 +62,7 @@ export const routes: Routes = [
           {
             path: 'despacho',
             title: 'Datos del despacho · GEEX',
+            canDeactivate: [confirmarSalidaSinGuardar],
             loadComponent: () => import('./features/configuracion/despacho/datos-despacho').then((m) => m.DatosDespacho),
           },
           {
@@ -73,6 +75,7 @@ export const routes: Routes = [
             path: 'roles',
             title: 'Roles y permisos · GEEX',
             canActivate: [exigirPermiso('PERMISOS_GESTIONAR')],
+            canDeactivate: [confirmarSalidaSinGuardar],
             loadComponent: () => import('./features/configuracion/roles/roles').then((m) => m.Roles),
           },
           {

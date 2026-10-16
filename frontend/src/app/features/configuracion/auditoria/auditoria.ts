@@ -26,6 +26,12 @@ import { AvisosService } from '../../../core/ui/avisos.service';
     .filtros .accion { min-width: 280px; }
     .filtros .fecha { width: 180px; }
     .cuando { white-space: nowrap; }
+    /* Móvil: acción en una fila, las dos fechas en la siguiente y debajo los botones */
+    @media (max-width: 600px) {
+      .filtros { display: grid; grid-template-columns: 1fr 1fr; }
+      .filtros .accion { min-width: 0; grid-column: 1 / -1; }
+      .filtros .fecha { width: auto; min-width: 0; }
+    }
   `,
 })
 export class Auditoria implements OnInit {

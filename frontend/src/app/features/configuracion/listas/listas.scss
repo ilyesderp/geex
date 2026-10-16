@@ -117,12 +117,6 @@
   gap: 8px;
   flex-wrap: wrap;
   min-width: 0;
-
-  code {
-    font-size: 0.75rem;
-    color: var(--geex-texto-suave);
-    margin-left: auto;
-  }
 }
 
 .valor__edicion {
@@ -133,8 +127,13 @@
   border-radius: 6px;
 }
 
-.peligro {
-  color: #b3261e;
+.eliminar {
+  color: var(--geex-texto-suave);
+
+  &:hover,
+  &:focus-visible {
+    color: #b3261e;
+  }
 }
 
 .hueco {
@@ -161,13 +160,25 @@
   transition: transform 200ms ease;
 }
 
+.catalogos-movil {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .listas {
     grid-template-columns: 1fr;
   }
 
   .catalogos {
-    position: static;
-    max-height: 280px;
+    display: none;
+  }
+
+  .catalogos-movil {
+    display: block;
+    width: 100%;
+  }
+
+  .valores__filtro {
+    width: 100%;
   }
 }

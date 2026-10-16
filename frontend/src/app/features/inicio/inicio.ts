@@ -1,12 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { FASE_ACTUAL, MODULOS } from '../../core/modulos';
+import { MODULOS } from '../../core/modulos';
 import { SesionService } from '../../core/sesion/sesion.service';
 
 /**
  * Pantalla de inicio: los 24 apartados "a golpe de vista" (pág. 3 del documento).
- * Los que aún no están construidos indican en qué fase llegan.
+ * Primero, en grande, los que ya se pueden usar; después, compactos, los que
+ * están en preparación.
  */
 @Component({
   selector: 'geex-inicio',
@@ -16,9 +17,8 @@ import { SesionService } from '../../core/sesion/sesion.service';
 })
 export class Inicio {
   protected readonly sesion = inject(SesionService);
-  protected readonly modulos = MODULOS;
-  protected readonly faseActual = FASE_ACTUAL;
-  protected readonly disponibles = MODULOS.filter((m) => m.ruta).length;
+  protected readonly disponibles = MODULOS.filter((m) => m.ruta);
+  protected readonly pendientes = MODULOS.filter((m) => !m.ruta);
 
   protected readonly saludo = computed(() => {
     const hora = new Date().getHours();

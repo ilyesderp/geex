@@ -25,7 +25,8 @@ import { ConfirmacionService } from '../../../core/ui/confirmacion.service';
   templateUrl: './usuarios.html',
   styles: `
     .persona { display: flex; flex-direction: column; padding: 6px 0; }
-    .persona small { color: var(--geex-texto-suave); }
+    .persona small { color: var(--geex-texto-suave); overflow-wrap: anywhere; }
+    .resumen-movil { align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; font-size: 0.85rem; }
     .usted { font-size: 0.75rem; color: var(--geex-azul); font-weight: 600; margin-left: 6px; }
     .buscador { width: 100%; max-width: 380px; }
     .col-acciones { width: 56px; text-align: right; }

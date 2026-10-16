@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 import { firstValueFrom } from 'rxjs';
 import { CalendarioService } from '../../../api/generated';
@@ -30,19 +31,25 @@ type Ambito = FestivoGlobalPeticion.AmbitoEnum;
 @Component({
   selector: 'geex-calendario',
   imports: [FormsModule, DatePipe, MatTableModule, MatButtonModule, MatIconModule, MatSelectModule, MatFormFieldModule,
-    MatInputModule, MatDatepickerModule, MatDialogModule, MatCheckboxModule, MatProgressBarModule],
+    MatInputModule, MatDatepickerModule, MatDialogModule, MatCheckboxModule, MatProgressBarModule, MatTooltipModule],
   templateUrl: './calendario.html',
   styles: `
     .controles { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .controles mat-form-field { width: 120px; }
-    .resumen { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 16px; }
+    .resumen { display: grid; grid-template-columns: repeat(3, max-content); gap: 8px 40px; margin-bottom: 16px; }
     .resumen strong { font-size: 1.5rem; color: var(--geex-marino); display: block; }
     .fecha { white-space: nowrap; }
     .fecha small { display: block; color: var(--geex-texto-suave); text-transform: capitalize; }
     .nota { margin: 16px 0 0; font-size: 0.85rem; }
     .provisional { margin-left: 8px; }
-    .peligro { color: #b3261e; }
+    /* Icono neutro; solo se pinta de rojo al pasar por encima (una columna roja entera distrae) */
+    .eliminar { color: var(--geex-texto-suave); }
+    .eliminar:hover, .eliminar:focus-visible { color: #b3261e; }
     .col-acciones { width: 56px; text-align: right; }
+    @media (max-width: 600px) {
+      .resumen { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; font-size: 0.8rem; line-height: 1.3; }
+      .resumen strong { font-size: 1.3rem; }
+    }
   `,
 })
 export class Calendario implements OnInit {

@@ -32,9 +32,14 @@ import { AccesoLayout } from './acceso-layout';
         <mat-form-field>
           <mat-label>Correo electrónico</mat-label>
           <input matInput id="email" type="email" formControlName="email" autocomplete="username" />
+          @if (formulario.controls.email.hasError('required')) {
+            <mat-error>Escribe tu correo electrónico</mat-error>
+          } @else if (formulario.controls.email.hasError('email')) {
+            <mat-error>Correo electrónico no válido</mat-error>
+          }
         </mat-form-field>
         <geex-campo-contrasena [control]="formulario.controls.contrasena" />
-        <button matButton="filled" type="submit" class="entrar" [disabled]="formulario.invalid || enviando()">
+        <button matButton="filled" type="submit" class="entrar" [disabled]="enviando()">
           @if (enviando()) { <mat-spinner diameter="20" /> } @else { <mat-icon>login</mat-icon> }
           Entrar
         </button>
@@ -66,6 +71,7 @@ export class Login {
 
   async entrar(): Promise<void> {
     if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
       return;
     }
     this.enviando.set(true);

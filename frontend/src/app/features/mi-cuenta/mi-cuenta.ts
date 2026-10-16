@@ -53,7 +53,7 @@ import { CampoContrasena } from '../../shared/campo-contrasena';
               <geex-aviso>Las contraseñas no coinciden.</geex-aviso>
             }
             <div class="geex-acciones">
-              <button matButton="filled" type="submit" [disabled]="formulario.invalid || enviando()">
+              <button matButton="filled" type="submit" [disabled]="enviando()">
                 <mat-icon>lock_reset</mat-icon> Cambiar contraseña
               </button>
             </div>
@@ -87,6 +87,10 @@ export class MiCuenta {
   );
 
   async cambiar(): Promise<void> {
+    if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
+      return;
+    }
     this.enviando.set(true);
     const { actual, nueva } = this.formulario.getRawValue();
     try {

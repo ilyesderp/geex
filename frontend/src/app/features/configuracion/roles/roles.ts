@@ -2,8 +2,10 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { RolesService } from '../../../api/generated';
@@ -11,6 +13,8 @@ import { DescripcionPermiso } from '../../../api/generated/model/descripcionPerm
 import { PermisosDeRol } from '../../../api/generated/model/permisosDeRol';
 import { SesionService } from '../../../core/sesion/sesion.service';
 import { AvisosService } from '../../../core/ui/avisos.service';
+import { avisarAlCerrarPestana, ConCambiosSinGuardar } from '../../../core/ui/cambios-sin-guardar';
+import { BarraCambios } from '../../../shared/barra-cambios';
 
 type PermisoClave = DescripcionPermiso['permiso'];
 type RolClave = PermisosDeRol['rol'];
@@ -20,14 +24,20 @@ interface GrupoPermisos {
   permisos: DescripcionPermiso[];
 }
 
-/** Matriz de permisos: qué puede hacer cada rol del despacho (el titular siempre puede todo). */
+/**
+ * Matriz de permisos: qué puede hacer cada rol del despacho (el titular siempre
+ * puede todo). En escritorio se ve la matriz completa; en pantallas estrechas,
+ * un rol cada vez.
+ */
 @Component({
   selector: 'geex-roles',
-  imports: [FormsModule, MatButtonModule, MatCheckboxModule, MatIconModule, MatProgressBarModule, MatTooltipModule],
+  imports: [FormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatProgressBarModule,
+    MatSelectModule, MatTooltipModule, BarraCambios],
   templateUrl: './roles.html',
   styleUrl: './roles.scss',
+  host: { '(window:beforeunload)': 'alCerrarPestana($event)' },
 })
-export class Roles implements OnInit {
+export class Roles implements OnInit, ConCambiosSinGuardar {
   private readonly api = inject(RolesService);
   private readonly avisos = inject(AvisosService);
   private readonly sesion = inject(SesionService);
@@ -45,6 +55,24 @@ export class Roles implements OnInit {
       .filter((r) => r.editable && !iguales(this.edicion()[r.rol], this.original[r.rol]))
       .map((r) => r.rol),
   );
+
+  protected readonly editables = computed(() => this.roles().filter((r) => r.editable));
+  /** Rol que se edita en la vista de pantallas estrechas. */
+  protected readonly rolMovil = signal<RolClave>('ABOGADO');
+  protected readonly rolSeleccionado = computed(() => this.roles().find((r) => r.rol === this.rolMovil()));
+
+  protected readonly mensajeCambios = computed(() => {
+    const n = this.cambiados().length;
+    return n === 1 ? 'Cambios sin guardar en 1 rol' : `Cambios sin guardar en ${n} roles`;
+  });
+
+  tieneCambiosSinGuardar(): boolean {
+    return this.cambiados().length > 0;
+  }
+
+  protected alCerrarPestana(evento: BeforeUnloadEvent): void {
+    avisarAlCerrarPestana(evento, this.tieneCambiosSinGuardar());
+  }
 
   async ngOnInit(): Promise<void> {
     try {

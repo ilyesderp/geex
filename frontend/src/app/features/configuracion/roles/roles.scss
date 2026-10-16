@@ -1,6 +1,6 @@
+// Sin overflow: la cabecera de la matriz queda fija bajo la barra superior al desplazarse
 .matriz-contenedor {
   padding: 0;
-  overflow-x: auto;
 }
 
 .matriz {
@@ -17,7 +17,7 @@
 
   thead th {
     position: sticky;
-    top: 0;
+    top: var(--geex-cabecera);
     background: #f8fafc;
     font-weight: 650;
     text-align: center;
@@ -62,4 +62,54 @@
   color: var(--geex-texto-suave);
   padding-top: 8px;
   padding-bottom: 8px;
+}
+
+// Hueco para que la barra de cambios no tape las últimas filas
+.con-barra {
+  padding-bottom: 110px;
+}
+
+// Vista de un rol cada vez (pantallas estrechas)
+.por-rol {
+  display: none;
+}
+
+.por-rol__selector {
+  width: 100%;
+}
+
+.por-rol__lista {
+  margin-top: 12px;
+  padding: 4px 16px 12px;
+}
+
+.por-rol__grupo {
+  margin: 16px 0 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--geex-texto-suave);
+}
+
+.por-rol__nota {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .matriz-contenedor {
+    display: none;
+  }
+
+  .por-rol {
+    display: block;
+  }
 }

@@ -7,6 +7,20 @@
     </div>
   </div>
 
+  <!-- Pantallas estrechas: la lista se elige en un desplegable para que los valores queden a la vista -->
+  <mat-form-field class="catalogos-movil">
+    <mat-label>Lista</mat-label>
+    <mat-select [value]="seleccionado()?.tipo" (selectionChange)="seleccionarTipo($event.value)">
+      @for (grupo of grupos(); track grupo.nombre) {
+        <mat-optgroup [label]="grupo.nombre">
+          @for (catalogo of grupo.catalogos; track catalogo.tipo) {
+            <mat-option [value]="catalogo.tipo">{{ catalogo.nombre }} ({{ catalogo.activos }})</mat-option>
+          }
+        </mat-optgroup>
+      }
+    </mat-select>
+  </mat-form-field>
+
   <div class="listas">
     <nav class="geex-tarjeta catalogos" aria-label="Listas">
       @for (grupo of grupos(); track grupo.nombre) {
@@ -67,7 +81,6 @@
                   <span>{{ valor.etiqueta }}</span>
                   @if (valor.sistema) { <span class="geex-etiqueta">Predefinido</span> }
                 }
-                <code>{{ valor.codigo }}</code>
               </div>
               <mat-slide-toggle [checked]="valor.activo" (change)="cambiarActivo(valor, $event.checked)"
                                 [disabled]="!puedeEditar" [aria-label]="'Activo: ' + valor.etiqueta" />
@@ -77,7 +90,7 @@
                   <mat-icon>edit</mat-icon>
                 </button>
                 @if (!valor.sistema) {
-                  <button matIconButton type="button" class="peligro" (click)="eliminar(valor)" matTooltip="Eliminar"
+                  <button matIconButton type="button" class="eliminar" (click)="eliminar(valor)" matTooltip="Eliminar"
                           aria-label="Eliminar">
                     <mat-icon>delete</mat-icon>
                   </button>
