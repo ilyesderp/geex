@@ -1,0 +1,51 @@
+# Backend: compila y ejecuta todos los tests (unitarios, de arquitectura, de
+# integración y de concurrencia contra PostgreSQL real con Testcontainers).
+name: Backend CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend · compilar y probar
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Compilar y ejecutar los tests
+        run: ./mvnw -B -ntp verify
+
+      - name: Publicar informes de tests si fallan
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: informes-tests-backend
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+      - name: Publicar cobertura (JaCoCo)
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cobertura-backend
+          path: backend/target/site/jacoco/
+          retention-days: 14

@@ -1,0 +1,66 @@
+<section class="geex-pagina">
+  <div class="geex-pagina__cabecera">
+    <div>
+      <h1>Auditoría</h1>
+      <p>Quién hizo qué y cuándo en el despacho. Los registros no se pueden modificar ni borrar.</p>
+    </div>
+  </div>
+
+  <div class="geex-tarjeta">
+    <div class="filtros">
+      <mat-form-field class="accion">
+        <mat-label>Acción</mat-label>
+        <mat-select [(ngModel)]="accion">
+          <mat-option [value]="null">Todas</mat-option>
+          @for (a of acciones; track a.valor) { <mat-option [value]="a.valor">{{ a.nombre }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="fecha">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="selectorDesde" [(ngModel)]="desde" />
+        <mat-datepicker-toggle matIconSuffix [for]="selectorDesde" />
+        <mat-datepicker #selectorDesde />
+      </mat-form-field>
+      <mat-form-field class="fecha">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="selectorHasta" [(ngModel)]="hasta" />
+        <mat-datepicker-toggle matIconSuffix [for]="selectorHasta" />
+        <mat-datepicker #selectorHasta />
+      </mat-form-field>
+      <button matButton="filled" type="button" (click)="aplicarFiltros()"><mat-icon>filter_alt</mat-icon> Aplicar</button>
+      <button matButton type="button" (click)="limpiar()">Limpiar</button>
+    </div>
+
+    @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
+    <div class="geex-tabla-contenedor">
+      <table mat-table [dataSource]="entradas()" class="geex-tabla">
+        <ng-container matColumnDef="ocurridoEn">
+          <th mat-header-cell *matHeaderCellDef>Fecha y hora</th>
+          <td mat-cell *matCellDef="let e" class="cuando">{{ e.ocurridoEn | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actor">
+          <th mat-header-cell *matHeaderCellDef>Usuario</th>
+          <td mat-cell *matCellDef="let e">{{ e.actor }}</td>
+        </ng-container>
+        <ng-container matColumnDef="accion">
+          <th mat-header-cell *matHeaderCellDef>Acción</th>
+          <td mat-cell *matCellDef="let e">
+            <span class="geex-etiqueta" [class.geex-etiqueta--peligro]="esAlerta(e.accion)">{{ nombreAccion(e.accion) }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Detalle</th>
+          <td mat-cell *matCellDef="let e">{{ e.descripcion }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="geex-vacio" [attr.colspan]="columnas.length">No hay actividad registrada con estos filtros.</td>
+        </tr>
+      </table>
+    </div>
+    <mat-paginator [length]="total()" [pageIndex]="pagina()" [pageSize]="filas()" [pageSizeOptions]="[25, 50, 100]"
+                   (page)="cambiarPagina($event)" showFirstLastButtons aria-label="Páginas de la auditoría" />
+  </div>
+</section>

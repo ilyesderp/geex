@@ -1,0 +1,115 @@
+// Sin overflow: la cabecera de la matriz queda fija bajo la barra superior al desplazarse
+.matriz-contenedor {
+  padding: 0;
+}
+
+.matriz {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+
+  th,
+  td {
+    padding: 4px 14px;
+    border-bottom: 1px solid var(--geex-borde);
+  }
+
+  thead th {
+    position: sticky;
+    top: var(--geex-cabecera);
+    background: #f8fafc;
+    font-weight: 650;
+    text-align: center;
+    z-index: 1;
+  }
+
+  tbody tr:hover td {
+    background: #fafcff;
+  }
+}
+
+.matriz__permiso {
+  text-align: left !important;
+  min-width: 280px;
+}
+
+.matriz__rol {
+  min-width: 120px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+
+  .candado {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-left: 2px;
+    color: var(--geex-texto-suave);
+  }
+}
+
+.matriz__celda {
+  text-align: center;
+}
+
+.matriz__grupo td {
+  background: #f1f5f9 !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--geex-texto-suave);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+// Hueco para que la barra de cambios no tape las últimas filas
+.con-barra {
+  padding-bottom: 110px;
+}
+
+// Vista de un rol cada vez (pantallas estrechas)
+.por-rol {
+  display: none;
+}
+
+.por-rol__selector {
+  width: 100%;
+}
+
+.por-rol__lista {
+  margin-top: 12px;
+  padding: 4px 16px 12px;
+}
+
+.por-rol__grupo {
+  margin: 16px 0 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--geex-texto-suave);
+}
+
+.por-rol__nota {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .matriz-contenedor {
+    display: none;
+  }
+
+  .por-rol {
+    display: block;
+  }
+}

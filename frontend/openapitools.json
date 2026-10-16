@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.26.0",
+    "generators": {
+      "geex": {
+        "generatorName": "typescript-angular",
+        "inputSpec": "openapi/geex-api.json",
+        "output": "src/app/api/generated",
+        "additionalProperties": {
+          "ngVersion": "22.0.0",
+          "providedIn": "root",
+          "stringEnums": false,
+          "enumPropertyNaming": "original",
+          "supportsES6": true,
+          "withInterfaces": true,
+          "useSingleRequestParameter": false
+        },
+        "typeMappings": {
+          "Set": "Array",
+          "set": "Array"
+        }
+      }
+    }
+  }
+}

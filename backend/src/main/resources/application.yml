@@ -1,0 +1,73 @@
+# Configuración de GEEX.
+# Los secretos NUNCA se escriben aquí: se leen de variables de entorno o del archivo
+# .env de la raíz del repositorio (ignorado por git y generado por scripts/setup.*).
+spring:
+  application:
+    name: geex
+  config:
+    import:
+      - "optional:file:../.env[.properties]"
+      - "optional:file:./.env[.properties]"
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://${GEEX_DB_HOST:localhost}:${GEEX_DB_PORT:5432}/${GEEX_DB_NAME:geex}
+    # La aplicación usa un rol sin privilegios y sujeto a Row Level Security
+    username: geex_app
+    password: ${GEEX_DB_APP_PASSWORD:}
+    hikari:
+      maximum-pool-size: 20
+  flyway:
+    # Las migraciones se ejecutan con el usuario administrador
+    user: ${GEEX_DB_ADMIN_USER:}
+    password: ${GEEX_DB_ADMIN_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  mail:
+    host: ${GEEX_MAIL_HOST:localhost}
+    port: ${GEEX_MAIL_PORT:1025}
+  modulith:
+    events:
+      # La tabla event_publication la crea Flyway (V1); el rol de la aplicación no puede crear tablas
+      jdbc:
+        schema-initialization:
+          enabled: false
+      completion-mode: delete
+      republish-outstanding-events-on-restart: true
+  web:
+    locale: es_ES
+    locale-resolver: fixed
+
+server:
+  # Detrás de un proxy (nginx), la IP real del cliente llega en X-Forwarded-For.
+  # Tomcat solo confía en esa cabecera si la petición viene de una red interna.
+  forward-headers-strategy: native
+
+geex:
+  seguridad:
+    jwt-secreto: ${GEEX_JWT_SECRET:}
+    url-frontend: ${GEEX_FRONTEND_URL:http://localhost:4200}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    org.springframework.modulith: INFO

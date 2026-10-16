@@ -1,0 +1,60 @@
+# Ejecuta una versión publicada de GEEX (imágenes de GitHub Container Registry)
+# sin compilar nada. Útil para una demo:
+#
+#   1. Genera el .env:  powershell -ExecutionPolicy Bypass -File scripts/setup.ps1   (o ./scripts/setup.sh)
+#   2. Arranca:         docker compose -f docker-compose.prod.yml up -d
+#   3. Abre:            http://localhost:8081  (correos de prueba en http://localhost:8025)
+#
+# Para otra versión: GEEX_VERSION=1.0.0 docker compose -f docker-compose.prod.yml up -d
+name: geex-demo
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.7-pg17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${GEEX_DB_NAME:?Ejecuta scripts/setup para generar el archivo .env}
+      POSTGRES_USER: ${GEEX_DB_ADMIN_USER:?Ejecuta scripts/setup para generar el archivo .env}
+      POSTGRES_PASSWORD: ${GEEX_DB_ADMIN_PASSWORD:?Ejecuta scripts/setup para generar el archivo .env}
+      GEEX_DB_APP_PASSWORD: ${GEEX_DB_APP_PASSWORD:?Ejecuta scripts/setup para generar el archivo .env}
+    volumes:
+      - postgres-datos:/var/lib/postgresql/data
+      - ./infra/docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.31.6
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+
+  backend:
+    image: ghcr.io/ilyesderp/geex-backend:${GEEX_VERSION:-main}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GEEX_DB_HOST: postgres
+      GEEX_DB_NAME: ${GEEX_DB_NAME}
+      GEEX_DB_ADMIN_USER: ${GEEX_DB_ADMIN_USER}
+      GEEX_DB_ADMIN_PASSWORD: ${GEEX_DB_ADMIN_PASSWORD}
+      GEEX_DB_APP_PASSWORD: ${GEEX_DB_APP_PASSWORD}
+      GEEX_JWT_SECRET: ${GEEX_JWT_SECRET:?Ejecuta scripts/setup para generar el archivo .env}
+      GEEX_MAIL_HOST: mailpit
+      GEEX_FRONTEND_URL: http://localhost:8081
+
+  frontend:
+    image: ghcr.io/ilyesderp/geex-frontend:${GEEX_VERSION:-main}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:8081:80"
+
+volumes:
+  postgres-datos:

@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--geex-cabecera);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+  background: var(--geex-marino);
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(11 28 53 / 25%);
+}
+
+.barra__marca {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding-right: 20px;
+  border-right: 1px solid rgb(255 255 255 / 18%);
+  height: 36px;
+}
+
+.barra__modulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+
+  mat-icon {
+    color: var(--geex-turquesa);
+  }
+}
+
+.barra__derecha {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.barra__despacho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+  font-size: 0.9rem;
+  max-width: 300px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.barra__usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 10px;
+  font: inherit;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(255 255 255 / 10%);
+    outline: none;
+  }
+}
+
+.barra__avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--geex-turquesa);
+  color: #0b1c35;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.barra__nombre {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+
+  small {
+    opacity: 0.75;
+    font-size: 0.78rem;
+  }
+}
+
+.menu__cabecera {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid var(--geex-borde);
+  margin-bottom: 4px;
+
+  small {
+    color: var(--geex-texto-suave);
+  }
+}
+
+.contenido {
+  min-height: calc(100vh - var(--geex-cabecera));
+}
+
+@media (max-width: 768px) {
+  .barra {
+    padding: 0 12px;
+    gap: 12px;
+  }
+
+  .barra__despacho,
+  .barra__nombre {
+    display: none;
+  }
+
+  .barra__marca {
+    padding-right: 12px;
+  }
+}

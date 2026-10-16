@@ -1,0 +1,318 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   GEEX · estilos globales
+   Tema Material 3 (Angular Material) + tokens de marca y utilidades de maquetación.
+   Cambiar la marca es cambiar la paleta del tema y los tokens --geex-*.
+   ───────────────────────────────────────────────────────────────────────────── */
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: (
+      plain-family: ('Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
+      brand-family: ('Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
+    ),
+    density: 0,
+  ));
+}
+
+:root {
+  --geex-marino: #173a6b;
+  --geex-azul: #1f5fae;
+  --geex-turquesa: #4fb3a9;
+  --geex-fondo: #f4f6fa;
+  --geex-superficie: #ffffff;
+  --geex-borde: #e3e8f0;
+  --geex-texto: #1d2433;
+  --geex-texto-suave: #5b6578;
+  --geex-sombra: 0 1px 2px rgb(16 24 40 / 6%), 0 1px 3px rgb(16 24 40 / 10%);
+  --geex-sombra-elevada: 0 10px 24px rgb(16 24 40 / 10%);
+  --geex-radio: 12px;
+  --geex-cabecera: 64px;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--geex-texto);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--geex-fondo);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.25;
+  color: var(--geex-texto);
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+a {
+  color: var(--geex-azul);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ── Utilidades de página ──────────────────────────────────────────────── */
+
+.geex-pagina {
+  padding: 24px 32px 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.geex-pagina__cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  p {
+    margin: 4px 0 0;
+    color: var(--geex-texto-suave);
+    max-width: 780px;
+  }
+}
+
+.geex-tarjeta {
+  background: var(--geex-superficie);
+  border: 1px solid var(--geex-borde);
+  border-radius: var(--geex-radio);
+  box-shadow: var(--geex-sombra);
+  padding: 20px 24px;
+}
+
+.geex-formulario {
+  display: grid;
+  gap: 12px 16px;
+  // Sin esto, un campo con texto de ayuda estira al de al lado de su fila
+  align-items: start;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.geex-formulario--2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  .geex-col-completa {
+    grid-column: 1 / -1;
+  }
+}
+
+.geex-seccion-formulario {
+  font-size: 1rem;
+  color: var(--geex-marino);
+  margin: 8px 0 12px;
+}
+
+.geex-acciones {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.geex-vacio {
+  text-align: center;
+  color: var(--geex-texto-suave);
+  padding: 32px 16px;
+}
+
+.geex-texto-suave {
+  color: var(--geex-texto-suave);
+}
+
+.geex-centrado {
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+/* Avisos dentro de la página (errores de formulario, confirmaciones...) */
+.geex-aviso {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.93rem;
+  line-height: 1.45;
+
+  mat-icon {
+    flex: none;
+  }
+}
+
+.geex-aviso--error {
+  background: #fdecea;
+  color: #8a1c13;
+}
+
+.geex-aviso--advertencia {
+  background: #fff4e0;
+  color: #7a4a00;
+}
+
+.geex-aviso--exito {
+  background: #e3f5f2;
+  color: #145c53;
+}
+
+/* Etiquetas de estado */
+.geex-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #eef1f6;
+  color: #4a5468;
+}
+
+.geex-etiqueta--exito {
+  background: #e3f5f2;
+  color: #1d7a6f;
+}
+
+.geex-etiqueta--aviso {
+  background: #fff4e0;
+  color: #8a5300;
+}
+
+.geex-etiqueta--peligro {
+  background: #fdecea;
+  color: #a12a1f;
+}
+
+.geex-etiqueta--info {
+  background: #e8f0fb;
+  color: #1a5196;
+}
+
+/* Tablas */
+.geex-tabla {
+  width: 100%;
+
+  th.mat-mdc-header-cell {
+    font-weight: 650;
+    color: var(--geex-texto);
+    background: #f8fafc;
+  }
+
+  tr.mat-mdc-row:hover td {
+    background: #fafcff;
+  }
+}
+
+.geex-tabla-contenedor {
+  overflow-x: auto;
+}
+
+/* Notificaciones (snackbar) */
+.geex-snack-exito {
+  --mat-snack-bar-container-color: #145c53;
+}
+
+.geex-snack-error {
+  --mat-snack-bar-container-color: #8a1c13;
+}
+
+/* Contenido solo para móvil (p. ej. columnas de una tabla resumidas bajo el nombre) */
+.geex-solo-movil {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .geex-oculto-movil {
+    display: none !important;
+  }
+
+  .geex-solo-movil {
+    display: flex !important;
+  }
+
+  .geex-tarjeta {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .geex-pagina {
+    padding: 16px;
+  }
+
+  .geex-formulario--2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Menú de secciones (selector de configuración en móvil) */
+.geex-menu-secciones {
+  // Mismo ancho que el botón del selector (ancho de pantalla menos los márgenes)
+  width: calc(100vw - 32px);
+  max-width: none !important;
+
+  .geex-menu-secciones__activa {
+    background: #e8f0fb;
+    color: var(--geex-azul);
+    font-weight: 650;
+
+    .mat-icon {
+      color: var(--geex-azul);
+    }
+  }
+}
+
+/* Casilla en forma de fila: texto a la izquierda, casilla a la derecha y toda la fila pulsable */
+// Doble clase para ganar a los estilos propios de mat-checkbox, que se cargan después
+.mat-mdc-checkbox.geex-casilla-fila {
+  display: block;
+  border-bottom: 1px solid var(--geex-borde);
+
+  .mdc-form-field {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .mdc-label {
+    flex: 1;
+    margin: 0;
+    padding: 10px 0;
+    text-align: left;
+    cursor: pointer;
+  }
+}

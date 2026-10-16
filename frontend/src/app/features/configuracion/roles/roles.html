@@ -1,0 +1,83 @@
+<section class="geex-pagina" [class.con-barra]="cambiados().length">
+  <div class="geex-pagina__cabecera">
+    <div>
+      <h1>Roles y permisos</h1>
+      <p>Marca qué puede hacer cada rol. El titular siempre tiene acceso total para que el despacho nunca quede bloqueado.</p>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="geex-tarjeta"><mat-progress-bar mode="indeterminate" /></div>
+  } @else {
+    <!-- Escritorio: matriz completa (todos los roles a la vez) -->
+    <div class="geex-tarjeta matriz-contenedor">
+      <table class="matriz">
+        <thead>
+          <tr>
+            <th class="matriz__permiso">Permiso</th>
+            @for (rol of roles(); track rol.rol) {
+              <th class="matriz__rol" [matTooltip]="rol.descripcion">
+                {{ rol.etiqueta }}
+                @if (!rol.editable) { <mat-icon class="candado" aria-label="No editable">lock</mat-icon> }
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (grupo of grupos(); track grupo.nombre) {
+            <tr class="matriz__grupo"><td [attr.colspan]="roles().length + 1">{{ grupo.nombre }}</td></tr>
+            @for (permiso of grupo.permisos; track permiso.permiso) {
+              <tr>
+                <td class="matriz__permiso">{{ permiso.descripcion }}</td>
+                @for (rol of roles(); track rol.rol) {
+                  <td class="matriz__celda">
+                    <mat-checkbox [checked]="marcado(rol.rol, permiso.permiso)"
+                                  (change)="cambiar(rol.rol, permiso.permiso, $event.checked)"
+                                  [disabled]="!rol.editable"
+                                  [aria-label]="permiso.descripcion + ' — ' + rol.etiqueta" />
+                  </td>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pantallas estrechas: un rol cada vez -->
+    <div class="por-rol">
+      <mat-form-field class="por-rol__selector">
+        <mat-label>Rol</mat-label>
+        <mat-select [value]="rolMovil()" (selectionChange)="rolMovil.set($event.value)">
+          @for (rol of editables(); track rol.rol) {
+            <mat-option [value]="rol.rol">
+              {{ rol.etiqueta }}@if (cambiados().includes(rol.rol)) { · sin guardar }
+            </mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ rolSeleccionado()?.descripcion }}</mat-hint>
+      </mat-form-field>
+
+      <div class="geex-tarjeta por-rol__lista">
+        @for (grupo of grupos(); track grupo.nombre) {
+          <h3 class="por-rol__grupo">{{ grupo.nombre }}</h3>
+          @for (permiso of grupo.permisos; track permiso.permiso) {
+            <mat-checkbox class="geex-casilla-fila" labelPosition="before"
+                          [checked]="marcado(rolMovil(), permiso.permiso)"
+                          (change)="cambiar(rolMovil(), permiso.permiso, $event.checked)">
+              {{ permiso.descripcion }}
+            </mat-checkbox>
+          }
+        }
+      </div>
+      <p class="geex-texto-suave por-rol__nota">
+        <mat-icon aria-hidden="true">lock</mat-icon> El titular siempre tiene todos los permisos.
+      </p>
+    </div>
+  }
+</section>
+
+@if (cambiados().length) {
+  <geex-barra-cambios [mensaje]="mensajeCambios()" [guardando]="guardando()"
+                      (descartar)="descartar()" (guardar)="guardar()" />
+}

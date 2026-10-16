@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Bloquea el commit si gitleaks detecta secretos en los cambios preparados.
+set -euo pipefail
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner
+else
+  echo "[pre-commit] Aviso: gitleaks no está instalado; no se han comprobado secretos." >&2
+  echo "[pre-commit] Windows: winget install --id Gitleaks.Gitleaks" >&2
+fi
+
+# Nunca permitir subir el archivo .env ni documentos PDF privados
+if git diff --cached --name-only | grep -E '(^|/)\.env$|\.pdf$' >/dev/null; then
+  echo "[pre-commit] Bloqueado: no se pueden subir archivos .env ni PDF privados." >&2
+  exit 1
+fi

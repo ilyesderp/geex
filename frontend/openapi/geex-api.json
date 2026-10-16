@@ -1,0 +1,1717 @@
+{
+  "components" : {
+    "schemas" : {
+      "CalendarioAnual" : {
+        "properties" : {
+          "anio" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "comunidadAutonoma" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "dias" : {
+            "items" : {
+              "$ref" : "#/components/schemas/DiaInhabilVista"
+            },
+            "type" : "array"
+          },
+          "nombreComunidad" : {
+            "type" : "string"
+          },
+          "puedeEditarGlobales" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "anio", "comunidadAutonoma", "dias", "nombreComunidad", "puedeEditarGlobales" ],
+        "type" : "object"
+      },
+      "CambioContrasena" : {
+        "properties" : {
+          "actual" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nueva" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "actual", "nueva" ],
+        "type" : "object"
+      },
+      "CambioDespachoPeticion" : {
+        "properties" : {
+          "despachoId" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        },
+        "required" : [ "despachoId" ],
+        "type" : "object"
+      },
+      "CambioRolPeticion" : {
+        "properties" : {
+          "rol" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "rol" ],
+        "type" : "object"
+      },
+      "CambioValor" : {
+        "properties" : {
+          "activo" : {
+            "type" : "boolean"
+          },
+          "etiqueta" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "etiqueta" ],
+        "type" : "object"
+      },
+      "DatosDespachoPeticion" : {
+        "properties" : {
+          "codigoPostal" : {
+            "maxLength" : 10,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "comunidadAutonoma" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "direccion" : {
+            "maxLength" : 250,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "format" : "email",
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "municipio" : {
+            "maxLength" : 120,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nif" : {
+            "maxLength" : 20,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nombre" : {
+            "maxLength" : 150,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "provincia" : {
+            "maxLength" : 120,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "razonSocial" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "telefono" : {
+            "maxLength" : 30,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "version" : {
+            "format" : "int64",
+            "minimum" : 0,
+            "type" : "integer"
+          },
+          "web" : {
+            "maxLength" : 250,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "comunidadAutonoma", "municipio", "nombre", "provincia", "version" ],
+        "type" : "object"
+      },
+      "DescripcionPermiso" : {
+        "properties" : {
+          "descripcion" : {
+            "type" : "string"
+          },
+          "grupo" : {
+            "type" : "string"
+          },
+          "permiso" : {
+            "enum" : [ "CONTACTOS_VER", "CONTACTOS_EDITAR", "CONTACTOS_BORRAR", "EXPEDIENTES_VER", "EXPEDIENTES_EDITAR", "EXPEDIENTES_REVISAR", "EXPEDIENTES_CERRAR", "EXPEDIENTES_BORRAR", "DOCUMENTOS_VER", "DOCUMENTOS_EDITAR", "DOCUMENTOS_BORRAR", "TAREAS_VER_TODAS", "TAREAS_ASIGNAR", "PLAZOS_VER", "AGENDA_VER", "AGENDA_EDITAR", "FACTURACION_VER", "FACTURACION_EMITIR", "FACTURACION_RECTIFICAR", "HONORARIOS_GESTIONAR", "COLABORADORES_VER", "COLABORADORES_GESTIONAR", "COMUNICACIONES_ENVIAR", "DIFUSION_ENVIAR", "PLANTILLAS_GESTIONAR", "INFORMES_VER", "IMPORTACION_EJECUTAR", "JORNADA_GESTIONAR", "USUARIOS_GESTIONAR", "PERMISOS_GESTIONAR", "CONFIGURACION_GESTIONAR", "AUDITORIA_VER" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "descripcion", "grupo", "permiso" ],
+        "type" : "object"
+      },
+      "DespachoAcceso" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "rol" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          },
+          "rolEtiqueta" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "nombre", "rol", "rolEtiqueta" ],
+        "type" : "object"
+      },
+      "DespachoVista" : {
+        "properties" : {
+          "actualizadoEn" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "codigoPostal" : {
+            "type" : "string"
+          },
+          "comunidadAutonoma" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "creadoEn" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "direccion" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "municipio" : {
+            "type" : "string"
+          },
+          "nif" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "provincia" : {
+            "type" : "string"
+          },
+          "razonSocial" : {
+            "type" : "string"
+          },
+          "telefono" : {
+            "type" : "string"
+          },
+          "version" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "web" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "actualizadoEn", "codigoPostal", "comunidadAutonoma", "creadoEn", "direccion", "email", "id", "municipio", "nif", "nombre", "provincia", "razonSocial", "telefono", "version", "web" ],
+        "type" : "object"
+      },
+      "DiaInhabilVista" : {
+        "properties" : {
+          "ambito" : {
+            "enum" : [ "NACIONAL", "AUTONOMICO", "LOCAL" ],
+            "type" : "string"
+          },
+          "ambitoEtiqueta" : {
+            "type" : "string"
+          },
+          "comunidad" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "descripcion" : {
+            "type" : "string"
+          },
+          "editable" : {
+            "type" : "boolean"
+          },
+          "fecha" : {
+            "format" : "date",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "provisional" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "ambito", "ambitoEtiqueta", "comunidad", "descripcion", "editable", "fecha", "id", "provisional" ],
+        "type" : "object"
+      },
+      "EmailPeticion" : {
+        "properties" : {
+          "email" : {
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "email" ],
+        "type" : "object"
+      },
+      "EntradaAuditoria" : {
+        "properties" : {
+          "accion" : {
+            "type" : "string"
+          },
+          "actor" : {
+            "type" : "string"
+          },
+          "descripcion" : {
+            "type" : "string"
+          },
+          "entidadId" : {
+            "type" : "string"
+          },
+          "entidadTipo" : {
+            "type" : "string"
+          },
+          "ocurridoEn" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "required" : [ "accion", "actor", "descripcion", "entidadId", "entidadTipo", "ocurridoEn" ],
+        "type" : "object"
+      },
+      "EstadoInstalacion" : {
+        "properties" : {
+          "instalado" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "instalado" ],
+        "type" : "object"
+      },
+      "FestivoGlobalPeticion" : {
+        "properties" : {
+          "ambito" : {
+            "enum" : [ "NACIONAL", "AUTONOMICO", "LOCAL" ],
+            "type" : "string"
+          },
+          "comunidadAutonoma" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "descripcion" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "fecha" : {
+            "format" : "date",
+            "type" : "string"
+          },
+          "provisional" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "ambito", "descripcion", "fecha" ],
+        "type" : "object"
+      },
+      "FestivoLocalPeticion" : {
+        "properties" : {
+          "descripcion" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "fecha" : {
+            "format" : "date",
+            "type" : "string"
+          }
+        },
+        "required" : [ "descripcion", "fecha" ],
+        "type" : "object"
+      },
+      "InfoEnlace" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "tipo" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "nombre", "tipo" ],
+        "type" : "object"
+      },
+      "InstalacionPeticion" : {
+        "properties" : {
+          "apellidos" : {
+            "maxLength" : 150,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "comunidadAutonoma" : {
+            "enum" : [ "ANDALUCIA", "ARAGON", "ASTURIAS", "BALEARES", "CANARIAS", "CANTABRIA", "CASTILLA_LA_MANCHA", "CASTILLA_Y_LEON", "CATALUNA", "COMUNITAT_VALENCIANA", "EXTREMADURA", "GALICIA", "MADRID", "MURCIA", "NAVARRA", "PAIS_VASCO", "LA_RIOJA", "CEUTA", "MELILLA" ],
+            "type" : "string"
+          },
+          "contrasena" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "format" : "email",
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "municipio" : {
+            "maxLength" : 120,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nombre" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nombreDespacho" : {
+            "maxLength" : 150,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "provincia" : {
+            "maxLength" : 120,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "apellidos", "comunidadAutonoma", "contrasena", "email", "municipio", "nombre", "nombreDespacho", "provincia" ],
+        "type" : "object"
+      },
+      "InvitacionPeticion" : {
+        "properties" : {
+          "apellidos" : {
+            "maxLength" : 150,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "format" : "email",
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "nombre" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "rol" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "apellidos", "email", "nombre", "rol" ],
+        "type" : "object"
+      },
+      "LoginPeticion" : {
+        "properties" : {
+          "contrasena" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "contrasena", "email" ],
+        "type" : "object"
+      },
+      "NuevoOrden" : {
+        "properties" : {
+          "ids" : {
+            "items" : {
+              "format" : "uuid",
+              "type" : "string"
+            },
+            "minItems" : 1,
+            "type" : "array"
+          }
+        },
+        "required" : [ "ids" ],
+        "type" : "object"
+      },
+      "NuevoValor" : {
+        "properties" : {
+          "etiqueta" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "etiqueta" ],
+        "type" : "object"
+      },
+      "PaginaAuditoria" : {
+        "properties" : {
+          "entradas" : {
+            "items" : {
+              "$ref" : "#/components/schemas/EntradaAuditoria"
+            },
+            "type" : "array"
+          },
+          "pagina" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tamano" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "total" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "entradas", "pagina", "tamano", "total" ],
+        "type" : "object"
+      },
+      "Perfil" : {
+        "properties" : {
+          "apellidos" : {
+            "type" : "string"
+          },
+          "despachoActual" : {
+            "$ref" : "#/components/schemas/DespachoAcceso"
+          },
+          "despachos" : {
+            "items" : {
+              "$ref" : "#/components/schemas/DespachoAcceso"
+            },
+            "type" : "array"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "permisos" : {
+            "items" : {
+              "enum" : [ "CONTACTOS_VER", "CONTACTOS_EDITAR", "CONTACTOS_BORRAR", "EXPEDIENTES_VER", "EXPEDIENTES_EDITAR", "EXPEDIENTES_REVISAR", "EXPEDIENTES_CERRAR", "EXPEDIENTES_BORRAR", "DOCUMENTOS_VER", "DOCUMENTOS_EDITAR", "DOCUMENTOS_BORRAR", "TAREAS_VER_TODAS", "TAREAS_ASIGNAR", "PLAZOS_VER", "AGENDA_VER", "AGENDA_EDITAR", "FACTURACION_VER", "FACTURACION_EMITIR", "FACTURACION_RECTIFICAR", "HONORARIOS_GESTIONAR", "COLABORADORES_VER", "COLABORADORES_GESTIONAR", "COMUNICACIONES_ENVIAR", "DIFUSION_ENVIAR", "PLANTILLAS_GESTIONAR", "INFORMES_VER", "IMPORTACION_EJECUTAR", "JORNADA_GESTIONAR", "USUARIOS_GESTIONAR", "PERMISOS_GESTIONAR", "CONFIGURACION_GESTIONAR", "AUDITORIA_VER" ],
+              "type" : "string"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "superadmin" : {
+            "type" : "boolean"
+          },
+          "usuarioId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apellidos", "despachoActual", "despachos", "email", "nombre", "permisos", "superadmin", "usuarioId" ],
+        "type" : "object"
+      },
+      "PermisosDeRol" : {
+        "properties" : {
+          "descripcion" : {
+            "type" : "string"
+          },
+          "editable" : {
+            "type" : "boolean"
+          },
+          "etiqueta" : {
+            "type" : "string"
+          },
+          "permisos" : {
+            "items" : {
+              "enum" : [ "CONTACTOS_VER", "CONTACTOS_EDITAR", "CONTACTOS_BORRAR", "EXPEDIENTES_VER", "EXPEDIENTES_EDITAR", "EXPEDIENTES_REVISAR", "EXPEDIENTES_CERRAR", "EXPEDIENTES_BORRAR", "DOCUMENTOS_VER", "DOCUMENTOS_EDITAR", "DOCUMENTOS_BORRAR", "TAREAS_VER_TODAS", "TAREAS_ASIGNAR", "PLAZOS_VER", "AGENDA_VER", "AGENDA_EDITAR", "FACTURACION_VER", "FACTURACION_EMITIR", "FACTURACION_RECTIFICAR", "HONORARIOS_GESTIONAR", "COLABORADORES_VER", "COLABORADORES_GESTIONAR", "COMUNICACIONES_ENVIAR", "DIFUSION_ENVIAR", "PLANTILLAS_GESTIONAR", "INFORMES_VER", "IMPORTACION_EJECUTAR", "JORNADA_GESTIONAR", "USUARIOS_GESTIONAR", "PERMISOS_GESTIONAR", "CONFIGURACION_GESTIONAR", "AUDITORIA_VER" ],
+              "type" : "string"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "rol" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          }
+        },
+        "required" : [ "descripcion", "editable", "etiqueta", "permisos", "rol" ],
+        "type" : "object"
+      },
+      "PermisosPeticion" : {
+        "properties" : {
+          "permisos" : {
+            "items" : {
+              "enum" : [ "CONTACTOS_VER", "CONTACTOS_EDITAR", "CONTACTOS_BORRAR", "EXPEDIENTES_VER", "EXPEDIENTES_EDITAR", "EXPEDIENTES_REVISAR", "EXPEDIENTES_CERRAR", "EXPEDIENTES_BORRAR", "DOCUMENTOS_VER", "DOCUMENTOS_EDITAR", "DOCUMENTOS_BORRAR", "TAREAS_VER_TODAS", "TAREAS_ASIGNAR", "PLAZOS_VER", "AGENDA_VER", "AGENDA_EDITAR", "FACTURACION_VER", "FACTURACION_EMITIR", "FACTURACION_RECTIFICAR", "HONORARIOS_GESTIONAR", "COLABORADORES_VER", "COLABORADORES_GESTIONAR", "COMUNICACIONES_ENVIAR", "DIFUSION_ENVIAR", "PLANTILLAS_GESTIONAR", "INFORMES_VER", "IMPORTACION_EJECUTAR", "JORNADA_GESTIONAR", "USUARIOS_GESTIONAR", "PERMISOS_GESTIONAR", "CONFIGURACION_GESTIONAR", "AUDITORIA_VER" ],
+              "type" : "string"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          }
+        },
+        "required" : [ "permisos" ],
+        "type" : "object"
+      },
+      "ResumenCatalogo" : {
+        "properties" : {
+          "activos" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "descripcion" : {
+            "type" : "string"
+          },
+          "grupo" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "tipo" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          },
+          "valores" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "activos", "descripcion", "grupo", "nombre", "tipo", "valores" ],
+        "type" : "object"
+      },
+      "TokenAccesoRespuesta" : {
+        "properties" : {
+          "expiraEn" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "tokenAcceso" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "expiraEn", "tokenAcceso" ],
+        "type" : "object"
+      },
+      "TokenPeticion" : {
+        "properties" : {
+          "token" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "token" ],
+        "type" : "object"
+      },
+      "TokenYContrasena" : {
+        "properties" : {
+          "contrasena" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "token" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        },
+        "required" : [ "contrasena", "token" ],
+        "type" : "object"
+      },
+      "UsuarioDespacho" : {
+        "properties" : {
+          "apellidos" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "esUstedMismo" : {
+            "type" : "boolean"
+          },
+          "estado" : {
+            "enum" : [ "PENDIENTE_ACTIVACION", "ACTIVO", "DESACTIVADO" ],
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "nombre" : {
+            "type" : "string"
+          },
+          "rol" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          },
+          "rolEtiqueta" : {
+            "type" : "string"
+          },
+          "ultimoAcceso" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "required" : [ "apellidos", "email", "esUstedMismo", "estado", "id", "nombre", "rol", "rolEtiqueta", "ultimoAcceso" ],
+        "type" : "object"
+      },
+      "ValorVista" : {
+        "properties" : {
+          "activo" : {
+            "type" : "boolean"
+          },
+          "codigo" : {
+            "type" : "string"
+          },
+          "etiqueta" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "uuid",
+            "type" : "string"
+          },
+          "orden" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "sistema" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "activo", "codigo", "etiqueta", "id", "orden", "sistema" ],
+        "type" : "object"
+      }
+    },
+    "securitySchemes" : {
+      "bearer" : {
+        "bearerFormat" : "JWT",
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  },
+  "info" : {
+    "description" : "API de GEEX, gestión de expedientes de extranjería",
+    "title" : "GEEX API",
+    "version" : "0.1"
+  },
+  "openapi" : "3.1.0",
+  "paths" : {
+    "/api/auditoria" : {
+      "get" : {
+        "operationId" : "consultarAuditoria",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "accion",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "desde",
+          "required" : false,
+          "schema" : {
+            "format" : "date",
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "hasta",
+          "required" : false,
+          "schema" : {
+            "format" : "date",
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pagina",
+          "required" : false,
+          "schema" : {
+            "default" : 0,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "tamano",
+          "required" : false,
+          "schema" : {
+            "default" : 50,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginaAuditoria"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Registro de actividad, del más reciente al más antiguo",
+        "tags" : [ "Auditoria" ]
+      }
+    },
+    "/api/auth/cambiar-despacho" : {
+      "post" : {
+        "operationId" : "cambiarDespacho",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CambioDespachoPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TokenAccesoRespuesta"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Cambiar al despacho indicado (para usuarios con acceso a varios)",
+        "tags" : [ "Autenticacion" ]
+      }
+    },
+    "/api/auth/login" : {
+      "post" : {
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TokenAccesoRespuesta"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Iniciar sesión con correo y contraseña",
+        "tags" : [ "Autenticacion" ]
+      }
+    },
+    "/api/auth/logout" : {
+      "post" : {
+        "operationId" : "logout",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Cerrar sesión",
+        "tags" : [ "Autenticacion" ]
+      }
+    },
+    "/api/auth/refresh" : {
+      "post" : {
+        "operationId" : "refrescar",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "X-GEEX-Refresco",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TokenAccesoRespuesta"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Renovar el token de acceso con la cookie de refresco",
+        "tags" : [ "Autenticacion" ]
+      }
+    },
+    "/api/calendario/festivos-globales" : {
+      "post" : {
+        "operationId" : "anadirGlobal",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FestivoGlobalPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DiaInhabilVista"
+                }
+              }
+            },
+            "description" : "Created"
+          }
+        },
+        "summary" : "Añadir un festivo nacional o autonómico (administrador de la plataforma)",
+        "tags" : [ "Calendario" ]
+      }
+    },
+    "/api/calendario/festivos-globales/{id}" : {
+      "delete" : {
+        "operationId" : "eliminarGlobal",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Eliminar un festivo nacional o autonómico (administrador de la plataforma)",
+        "tags" : [ "Calendario" ]
+      }
+    },
+    "/api/calendario/festivos-locales" : {
+      "post" : {
+        "operationId" : "anadirLocal",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FestivoLocalPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DiaInhabilVista"
+                }
+              }
+            },
+            "description" : "Created"
+          }
+        },
+        "summary" : "Añadir un festivo local del municipio del despacho",
+        "tags" : [ "Calendario" ]
+      }
+    },
+    "/api/calendario/festivos-locales/{id}" : {
+      "delete" : {
+        "operationId" : "eliminarLocal",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Eliminar un festivo local",
+        "tags" : [ "Calendario" ]
+      }
+    },
+    "/api/calendario/{anio}" : {
+      "get" : {
+        "operationId" : "obtenerCalendario",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "anio",
+          "required" : true,
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CalendarioAnual"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Días inhábiles del año para el despacho actual",
+        "tags" : [ "Calendario" ]
+      }
+    },
+    "/api/catalogos" : {
+      "get" : {
+        "operationId" : "listarCatalogos",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/ResumenCatalogo"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Listas desplegables disponibles",
+        "tags" : [ "Catalogos" ]
+      }
+    },
+    "/api/catalogos/{tipo}/orden" : {
+      "put" : {
+        "operationId" : "reordenarValores",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tipo",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NuevoOrden"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/ValorVista"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Reordenar los valores de una lista",
+        "tags" : [ "Catalogos" ]
+      }
+    },
+    "/api/catalogos/{tipo}/valores" : {
+      "get" : {
+        "operationId" : "listarValores",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tipo",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "incluirInactivos",
+          "required" : false,
+          "schema" : {
+            "default" : false,
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/ValorVista"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Valores de una lista (solo activos salvo que se pida lo contrario)",
+        "tags" : [ "Catalogos" ]
+      },
+      "post" : {
+        "operationId" : "anadirValor",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tipo",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NuevoValor"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ValorVista"
+                }
+              }
+            },
+            "description" : "Created"
+          }
+        },
+        "summary" : "Añadir un valor",
+        "tags" : [ "Catalogos" ]
+      }
+    },
+    "/api/catalogos/{tipo}/valores/{id}" : {
+      "delete" : {
+        "operationId" : "eliminarValor",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tipo",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Eliminar un valor añadido por el despacho",
+        "tags" : [ "Catalogos" ]
+      },
+      "put" : {
+        "operationId" : "modificarValor",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tipo",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TIPO_PERSONA", "GENERO", "TIPO_CLIENTE", "TIPO_DOCUMENTO_IDENTIDAD", "REGIMEN", "NACIONALIDAD", "ESTADO_CIVIL", "PARENTESCO", "TIPO_DIRECCION", "SUPUESTO_NACIONALIDAD", "TIPO_EXPEDIENTE", "TIPO_TRAMITE", "TIPO_PROCEDIMIENTO", "ROL_EXPEDIENTE", "TIPO_SEGUIMIENTO", "TIPO_REQUERIMIENTO", "TIPO_RECURSO", "TIPO_TAREA" ],
+            "type" : "string"
+          }
+        }, {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CambioValor"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ValorVista"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Renombrar o activar/desactivar un valor",
+        "tags" : [ "Catalogos" ]
+      }
+    },
+    "/api/cuenta/activar" : {
+      "post" : {
+        "operationId" : "activar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TokenYContrasena"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Activar una cuenta invitada eligiendo la contraseña",
+        "tags" : [ "Cuenta" ]
+      }
+    },
+    "/api/cuenta/cambiar-contrasena" : {
+      "post" : {
+        "operationId" : "cambiarContrasena",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CambioContrasena"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Cambiar la contraseña propia (cierra todas las sesiones)",
+        "tags" : [ "Cuenta" ]
+      }
+    },
+    "/api/cuenta/enlaces/consultar" : {
+      "post" : {
+        "operationId" : "consultarEnlace",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TokenPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InfoEnlace"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Comprobar un enlace de invitación o de restablecimiento",
+        "tags" : [ "Cuenta" ]
+      }
+    },
+    "/api/cuenta/recuperar" : {
+      "post" : {
+        "operationId" : "recuperar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EmailPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "202" : {
+            "description" : "Accepted"
+          }
+        },
+        "summary" : "Solicitar un enlace para restablecer la contraseña",
+        "tags" : [ "Cuenta" ]
+      }
+    },
+    "/api/cuenta/restablecer" : {
+      "post" : {
+        "operationId" : "restablecer",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TokenYContrasena"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Elegir una contraseña nueva con el enlace recibido",
+        "tags" : [ "Cuenta" ]
+      }
+    },
+    "/api/despacho" : {
+      "get" : {
+        "operationId" : "obtenerDespacho",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DespachoVista"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Datos del despacho actual",
+        "tags" : [ "Despacho" ]
+      },
+      "put" : {
+        "operationId" : "actualizarDespacho",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DatosDespachoPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DespachoVista"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Modificar los datos del despacho",
+        "tags" : [ "Despacho" ]
+      }
+    },
+    "/api/instalacion" : {
+      "get" : {
+        "operationId" : "estado",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EstadoInstalacion"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Indica si GEEX ya está instalado",
+        "tags" : [ "Instalacion" ]
+      },
+      "post" : {
+        "operationId" : "instalar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/InstalacionPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          }
+        },
+        "summary" : "Crear el primer despacho y su administrador",
+        "tags" : [ "Instalacion" ]
+      }
+    },
+    "/api/roles" : {
+      "get" : {
+        "operationId" : "obtenerMatriz",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/PermisosDeRol"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Matriz de permisos de cada rol",
+        "tags" : [ "Roles" ]
+      }
+    },
+    "/api/roles/permisos" : {
+      "get" : {
+        "operationId" : "catalogoPermisos",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/DescripcionPermiso"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Catálogo de permisos existentes, con su grupo y descripción",
+        "tags" : [ "Roles" ]
+      }
+    },
+    "/api/roles/{rol}/permisos" : {
+      "put" : {
+        "operationId" : "actualizarPermisosRol",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "rol",
+          "required" : true,
+          "schema" : {
+            "enum" : [ "TITULAR", "ABOGADO", "GESTOR", "ADMINISTRATIVO", "FACTURACION", "COLABORADOR" ],
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PermisosPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PermisosDeRol"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Modificar los permisos de un rol",
+        "tags" : [ "Roles" ]
+      }
+    },
+    "/api/usuarios" : {
+      "get" : {
+        "operationId" : "listarUsuarios",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/UsuarioDespacho"
+                  },
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Usuarios del despacho",
+        "tags" : [ "Usuarios" ]
+      },
+      "post" : {
+        "operationId" : "invitar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/InvitacionPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioDespacho"
+                }
+              }
+            },
+            "description" : "Created"
+          }
+        },
+        "summary" : "Invitar a un usuario (recibe un correo para activar su cuenta)",
+        "tags" : [ "Usuarios" ]
+      }
+    },
+    "/api/usuarios/{id}/desactivar" : {
+      "post" : {
+        "operationId" : "desactivar",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Desactivar el acceso de un usuario al despacho",
+        "tags" : [ "Usuarios" ]
+      }
+    },
+    "/api/usuarios/{id}/reactivar" : {
+      "post" : {
+        "operationId" : "reactivar",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Reactivar el acceso de un usuario al despacho",
+        "tags" : [ "Usuarios" ]
+      }
+    },
+    "/api/usuarios/{id}/reenviar-invitacion" : {
+      "post" : {
+        "operationId" : "reenviar",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          }
+        },
+        "summary" : "Reenviar el correo de invitación",
+        "tags" : [ "Usuarios" ]
+      }
+    },
+    "/api/usuarios/{id}/rol" : {
+      "put" : {
+        "operationId" : "cambiarRol",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "uuid",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CambioRolPeticion"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioDespacho"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Cambiar el rol de un usuario",
+        "tags" : [ "Usuarios" ]
+      }
+    },
+    "/api/yo" : {
+      "get" : {
+        "operationId" : "obtenerPerfil",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Perfil"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Datos, permisos y despachos del usuario actual",
+        "tags" : [ "Perfil" ]
+      }
+    }
+  },
+  "security" : [ {
+    "bearer" : [ ]
+  } ],
+  "tags" : [ {
+    "description" : "Autenticación: inicio, renovación y cierre de sesión",
+    "name" : "Autenticacion"
+  }, {
+    "description" : "Auditoría: registro de actividad del despacho",
+    "name" : "Auditoria"
+  }, {
+    "description" : "Calendario laboral: días inhábiles para el cómputo de plazos",
+    "name" : "Calendario"
+  }, {
+    "description" : "Usuario de la sesión actual",
+    "name" : "Perfil"
+  }, {
+    "description" : "Instalación: primera puesta en marcha de GEEX",
+    "name" : "Instalacion"
+  }, {
+    "description" : "Listas desplegables parametrizables",
+    "name" : "Catalogos"
+  }, {
+    "description" : "Activación de cuenta y contraseña",
+    "name" : "Cuenta"
+  }, {
+    "description" : "Datos generales del despacho",
+    "name" : "Despacho"
+  }, {
+    "description" : "Roles y permisos",
+    "name" : "Roles"
+  }, {
+    "description" : "Personal del despacho",
+    "name" : "Usuarios"
+  } ]
+}
