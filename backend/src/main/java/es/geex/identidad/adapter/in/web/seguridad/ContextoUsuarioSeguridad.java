@@ -14,8 +14,8 @@ import es.geex.identidad.domain.evento.EventosIdentidad.PermisosRolActualizados;
 import java.time.Duration;
 import java.util.Set;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  * Implementación del puerto {@link ContextoUsuario}: lee el contexto de la
@@ -66,7 +66,8 @@ class ContextoUsuarioSeguridad implements ContextoUsuario {
                 .contains(permiso);
     }
 
-    @EventListener
+    /** Tras el commit: si se invalidara antes, otra petición podría volver a cachear los permisos antiguos. */
+    @TransactionalEventListener(fallbackExecution = true)
     void alActualizarPermisos(PermisosRolActualizados evento) {
         cachePermisos.invalidate(new ClaveRol(evento.despachoId(), evento.rol()));
     }

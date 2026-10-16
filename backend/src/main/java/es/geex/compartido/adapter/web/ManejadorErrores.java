@@ -2,6 +2,7 @@ package es.geex.compartido.adapter.web;
 
 import es.geex.compartido.domain.AccesoDenegadoException;
 import es.geex.compartido.domain.AutenticacionFallidaException;
+import es.geex.compartido.domain.ConflictoEdicionException;
 import es.geex.compartido.domain.DomainException;
 import es.geex.compartido.domain.NoEncontradoException;
 import es.geex.compartido.domain.ReglaNegocioException;
@@ -49,6 +50,11 @@ class ManejadorErrores extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AutenticacionFallidaException.class)
     ProblemDetail autenticacion(AutenticacionFallidaException e) {
         return problema(HttpStatus.UNAUTHORIZED, "No autenticado", e);
+    }
+
+    @ExceptionHandler(ConflictoEdicionException.class)
+    ProblemDetail conflictoEdicion(ConflictoEdicionException e) {
+        return problema(HttpStatus.CONFLICT, "Conflicto de edición", e);
     }
 
     @ExceptionHandler(DomainException.class)

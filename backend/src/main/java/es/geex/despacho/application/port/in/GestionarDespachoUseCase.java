@@ -21,7 +21,9 @@ public interface GestionarDespachoUseCase {
             ComunidadAutonoma comunidadAutonoma,
             String telefono,
             String email,
-            String web) {
+            String web,
+            /* Versión que el usuario cargó: si ha cambiado desde entonces, hay conflicto. */
+            long version) {
     }
 
     record DespachoVista(
@@ -38,6 +40,7 @@ public interface GestionarDespachoUseCase {
             String email,
             String web,
             Instant creadoEn,
-            Instant actualizadoEn) {
+            Instant actualizadoEn,
+            long version) {
     }
 }

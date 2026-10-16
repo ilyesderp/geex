@@ -2,6 +2,7 @@ package es.geex.identidad.application.service;
 
 import es.geex.compartido.application.ContextoUsuario;
 import es.geex.compartido.application.PublicadorEventos;
+import es.geex.compartido.domain.AccesoDenegadoException;
 import es.geex.compartido.domain.DespachoId;
 import es.geex.compartido.domain.Permiso;
 import es.geex.compartido.domain.Rol;
@@ -49,9 +50,15 @@ public class GestionPermisosService implements GestionPermisosUseCase, ConsultaU
     @Override
     public PermisosDeRol actualizarPermisos(Rol rol, Set<Permiso> permisos) {
         contexto.exigir(Permiso.PERMISOS_GESTIONAR);
+        if (rol.permisosEditables() && rol == contexto.rol()) {
+            // Evita que alguien con este permiso se conceda a sí mismo más permisos
+            throw new AccesoDenegadoException("NO_AUTOPERMISOS",
+                    "No puedes modificar los permisos de tu propio rol. Pídeselo a un titular.");
+        }
         MatrizPermisos matriz = matrices.obtener(contexto.despachoId());
         matriz.asignar(rol, permisos);
-        matrices.guardar(matriz);
+        // Solo se escribe el rol modificado: dos personas editando roles distintos no se pisan
+        matrices.guardarRol(contexto.despachoId(), rol, matriz.permisosDe(rol));
         eventos.publicar(new PermisosRolActualizados(contexto.despachoId(), contexto.usuarioId(), rol, reloj.instant()));
         return aVista(rol, matriz);
     }

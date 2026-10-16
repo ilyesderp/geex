@@ -47,7 +47,7 @@ public class CuentaService implements CuentaUseCase {
 
     @Override
     public InfoEnlace consultarEnlace(String token) {
-        TokenUnUso enlace = buscarEnlace(token);
+        TokenUnUso enlace = buscarEnlace(token, false);
         if (enlace.usadoEn() != null || !reloj.instant().isBefore(enlace.expiraEn())) {
             throw TokenUnUso.enlaceNoValido();
         }
@@ -58,7 +58,7 @@ public class CuentaService implements CuentaUseCase {
     @Override
     public void activarCuenta(String token, String contrasena) {
         Instant ahora = reloj.instant();
-        TokenUnUso enlace = buscarEnlace(token);
+        TokenUnUso enlace = buscarEnlace(token, true);
         enlace.validar(TokenUnUso.Tipo.INVITACION, ahora);
         PoliticaContrasenas.validar(contrasena);
         Usuario usuario = cargarUsuario(enlace);
@@ -93,7 +93,7 @@ public class CuentaService implements CuentaUseCase {
     @Override
     public void restablecerContrasena(String token, String contrasena) {
         Instant ahora = reloj.instant();
-        TokenUnUso enlace = buscarEnlace(token);
+        TokenUnUso enlace = buscarEnlace(token, true);
         enlace.validar(TokenUnUso.Tipo.RESTABLECIMIENTO, ahora);
         PoliticaContrasenas.validar(contrasena);
         Usuario usuario = cargarUsuario(enlace);
@@ -120,11 +120,13 @@ public class CuentaService implements CuentaUseCase {
         eventos.publicar(new ContrasenaCambiada(contexto.despachoId(), usuario.id(), ahora));
     }
 
-    private TokenUnUso buscarEnlace(String token) {
+    private TokenUnUso buscarEnlace(String token, boolean paraUsar) {
         if (token == null || token.isBlank()) {
             throw TokenUnUso.enlaceNoValido();
         }
-        return tokens.buscarEnlacePorHash(TokensSeguros.hash(token)).orElseThrow(TokenUnUso::enlaceNoValido);
+        String hash = TokensSeguros.hash(token);
+        return (paraUsar ? tokens.buscarEnlacePorHashParaUsar(hash) : tokens.buscarEnlacePorHash(hash))
+                .orElseThrow(TokenUnUso::enlaceNoValido);
     }
 
     private Usuario cargarUsuario(TokenUnUso enlace) {

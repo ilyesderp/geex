@@ -126,12 +126,15 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
 
     @Override
     public long contarTitularesActivos(DespachoId despacho) {
+        jdbc.sql("select pg_advisory_xact_lock(hashtextextended(:clave, 0))")
+                .param("clave", "titulares:" + despacho.valor())
+                .query((rs, n) -> 1).single();
         return membresias.countByDespachoIdAndRolAndActivaTrue(despacho.valor(), Rol.TITULAR);
     }
 
     private static Membresia aDominio(MembresiaEntity e) {
         return Membresia.reconstruir(e.id, new UsuarioId(e.usuarioId), new DespachoId(e.despachoId), e.rol, e.activa,
-                e.creadaEn, e.ultimoUso, 0);
+                e.creadaEn, e.ultimoUso);
     }
 
     // ── Sesiones de refresco ─────────────────────────────────────────────────
@@ -202,9 +205,18 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
 
     @Override
     public Optional<TokenUnUso> buscarEnlacePorHash(String hash) {
-        return tokens.findByTokenHash(hash).map(e -> TokenUnUso.reconstruir(e.id, new UsuarioId(e.usuarioId),
+        return tokens.findByTokenHash(hash).map(IdentidadPersistenceAdapter::aDominio);
+    }
+
+    @Override
+    public Optional<TokenUnUso> buscarEnlacePorHashParaUsar(String hash) {
+        return tokens.buscarParaUsar(hash).map(IdentidadPersistenceAdapter::aDominio);
+    }
+
+    private static TokenUnUso aDominio(TokenUnUsoEntity e) {
+        return TokenUnUso.reconstruir(e.id, new UsuarioId(e.usuarioId),
                 e.despachoId == null ? null : new DespachoId(e.despachoId), e.tipo, e.tokenHash, e.expiraEn,
-                e.usadoEn, e.creadoEn));
+                e.usadoEn, e.creadoEn);
     }
 
     @Override
@@ -229,18 +241,21 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
 
     @Override
     public void guardar(MatrizPermisos matriz) {
-        UUID despacho = matriz.despachoId().valor();
-        jdbc.sql("delete from permisos_rol where despacho_id = :d").param("d", despacho).update();
-        matriz.comoMapa().forEach((rol, permisos) -> {
-            if (rol == Rol.TITULAR) {
-                return; // el titular siempre tiene todos los permisos; no se guarda
-            }
-            for (Permiso permiso : permisos) {
-                jdbc.sql("insert into permisos_rol (despacho_id, rol, permiso) values (:d, :r, :p)")
-                        .param("d", despacho).param("r", rol.name()).param("p", permiso.name())
-                        .update();
-            }
-        });
+        matriz.comoMapa().forEach((rol, permisos) -> guardarRol(matriz.despachoId(), rol, permisos));
+    }
+
+    @Override
+    public void guardarRol(DespachoId despacho, Rol rol, Set<Permiso> permisos) {
+        if (rol == Rol.TITULAR) {
+            return; // el titular siempre tiene todos los permisos; no se guarda
+        }
+        jdbc.sql("delete from permisos_rol where despacho_id = :d and rol = :r")
+                .param("d", despacho.valor()).param("r", rol.name()).update();
+        for (Permiso permiso : permisos) {
+            jdbc.sql("insert into permisos_rol (despacho_id, rol, permiso) values (:d, :r, :p)")
+                    .param("d", despacho.valor()).param("r", rol.name()).param("p", permiso.name())
+                    .update();
+        }
     }
 
     /** Ignora valores antiguos que ya no existan en el código (p. ej. un permiso eliminado). */

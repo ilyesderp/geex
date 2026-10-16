@@ -7,6 +7,10 @@ public class AccesoDenegadoException extends DomainException {
         super("ACCESO_DENEGADO", mensaje);
     }
 
+    public AccesoDenegadoException(String codigo, String mensaje) {
+        super(codigo, mensaje);
+    }
+
     public static AccesoDenegadoException faltaPermiso(Permiso permiso) {
         return new AccesoDenegadoException("No tienes permiso para: " + permiso.descripcion().toLowerCase());
     }

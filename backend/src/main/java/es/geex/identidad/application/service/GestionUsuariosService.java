@@ -2,6 +2,7 @@ package es.geex.identidad.application.service;
 
 import es.geex.compartido.application.ContextoUsuario;
 import es.geex.compartido.application.PublicadorEventos;
+import es.geex.compartido.domain.AccesoDenegadoException;
 import es.geex.compartido.domain.DespachoId;
 import es.geex.compartido.domain.NoEncontradoException;
 import es.geex.compartido.domain.Permiso;
@@ -79,6 +80,9 @@ public class GestionUsuariosService implements GestionUsuariosUseCase {
     public UsuarioDespacho invitar(Invitacion inv) {
         contexto.exigir(Permiso.USUARIOS_GESTIONAR);
         Objects.requireNonNull(inv.rol(), "El rol es obligatorio");
+        if (inv.rol() == Rol.TITULAR) {
+            exigirSerTitular("nombrar a otro titular");
+        }
         Instant ahora = reloj.instant();
         DespachoId despacho = contexto.despachoId();
         String email = Usuario.normalizarEmail(inv.email());
@@ -121,10 +125,16 @@ public class GestionUsuariosService implements GestionUsuariosUseCase {
     public UsuarioDespacho cambiarRol(UsuarioId id, Rol nuevo) {
         contexto.exigir(Permiso.USUARIOS_GESTIONAR);
         Objects.requireNonNull(nuevo, "El rol es obligatorio");
+        if (id.equals(contexto.usuarioId())) {
+            throw new ReglaNegocioException("NO_AUTOCAMBIO_ROL", "No puedes cambiar tu propio rol. Pídeselo a un titular.");
+        }
         Membresia membresia = cargarMembresia(id);
         Rol anterior = membresia.rol();
         if (anterior == nuevo) {
             return aVista(cargarUsuario(id), membresia);
+        }
+        if (anterior == Rol.TITULAR || nuevo == Rol.TITULAR) {
+            exigirSerTitular("nombrar o retirar titulares");
         }
         if (anterior == Rol.TITULAR && membresia.activa()) {
             exigirOtroTitular();
@@ -149,6 +159,7 @@ public class GestionUsuariosService implements GestionUsuariosUseCase {
             return;
         }
         if (membresia.rol() == Rol.TITULAR) {
+            exigirSerTitular("desactivar a un titular");
             exigirOtroTitular();
         }
         Instant ahora = reloj.instant();
@@ -165,6 +176,9 @@ public class GestionUsuariosService implements GestionUsuariosUseCase {
         if (membresia.activa()) {
             return;
         }
+        if (membresia.rol() == Rol.TITULAR) {
+            exigirSerTitular("reactivar a un titular");
+        }
         membresia.reactivar();
         membresias.guardar(membresia);
         eventos.publicar(new AccesoReactivado(contexto.despachoId(), contexto.usuarioId(), id, reloj.instant()));
@@ -177,6 +191,17 @@ public class GestionUsuariosService implements GestionUsuariosUseCase {
         tokens.guardar(TokenUnUso.nuevo(usuario.id(), despacho, TokenUnUso.Tipo.INVITACION,
                 TokensSeguros.hash(token), expira, ahora));
         notificador.enviarInvitacion(usuario.email(), usuario.nombre(), nombreDespacho, token, expira);
+    }
+
+    /**
+     * El permiso de gestionar usuarios se puede dar a otros roles, pero lo que
+     * afecta a titulares (nombrarlos, retirarlos, desactivarlos) queda reservado a
+     * un titular: si no, cualquiera con ese permiso podría hacerse con el despacho.
+     */
+    private void exigirSerTitular(String accion) {
+        if (contexto.rol() != Rol.TITULAR) {
+            throw new AccesoDenegadoException("SOLO_TITULAR", "Solo un titular puede " + accion);
+        }
     }
 
     /** Un despacho nunca puede quedarse sin un titular activo. */

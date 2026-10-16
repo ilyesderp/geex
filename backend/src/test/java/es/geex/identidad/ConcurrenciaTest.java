@@ -48,6 +48,33 @@ class ConcurrenciaTest extends PruebaIntegracion {
         assertThat(contar("usuarios")).isEqualTo(1);
     }
 
+    @RepeatedTest(3)
+    void dos_titulares_que_se_retiran_el_uno_al_otro_a_la_vez_no_dejan_el_despacho_sin_titular() throws Exception {
+        reiniciarBaseDeDatos();
+        Sesion ana = iniciarSesion(instalar("Despacho Dos Titulares"));
+        Sesion beatriz = altaUsuario(ana, "TITULAR");
+        String idAna = usuarioId(ana);
+        String idBeatriz = usuarioId(beatriz);
+
+        var salida = new CountDownLatch(1);
+        List<Integer> estados;
+        try (var ejecutor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future<Integer> anaRetiraABeatriz = ejecutor.submit(() -> {
+                salida.await();
+                return put("/api/usuarios/" + idBeatriz + "/rol", ana.token(), "{\"rol\":\"GESTOR\"}").estado();
+            });
+            Future<Integer> beatrizRetiraAAna = ejecutor.submit(() -> {
+                salida.await();
+                return put("/api/usuarios/" + idAna + "/rol", beatriz.token(), "{\"rol\":\"GESTOR\"}").estado();
+            });
+            salida.countDown();
+            estados = List.of(anaRetiraABeatriz.get(), beatrizRetiraAAna.get());
+        }
+
+        assertThat(estados).containsExactlyInAnyOrder(200, 422);
+        assertThat(contar("membresias where rol = 'TITULAR' and activa")).as("titulares activos").isEqualTo(1);
+    }
+
     private <T> List<T> enParalelo(Callable<T> tarea) throws Exception {
         var salida = new CountDownLatch(1);
         try (var ejecutor = Executors.newVirtualThreadPerTaskExecutor()) {

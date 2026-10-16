@@ -3,6 +3,7 @@ package es.geex.despacho.application.service;
 import es.geex.compartido.application.ContextoUsuario;
 import es.geex.compartido.application.PublicadorEventos;
 import es.geex.compartido.domain.ComunidadAutonoma;
+import es.geex.compartido.domain.ConflictoEdicionException;
 import es.geex.compartido.domain.DespachoId;
 import es.geex.compartido.domain.NoEncontradoException;
 import es.geex.compartido.domain.Permiso;
@@ -53,11 +54,14 @@ public class DespachoService implements CrearDespachoUseCase, GestionarDespachoU
     public DespachoVista actualizar(DatosDespachoComando c) {
         contexto.exigir(Permiso.CONFIGURACION_GESTIONAR);
         var despacho = cargar(contexto.despachoId());
+        if (despacho.version() != c.version()) {
+            throw new ConflictoEdicionException();
+        }
         despacho.actualizar(new DatosDespacho(c.nombre(), c.razonSocial(), c.nif(), c.direccion(), c.codigoPostal(),
                 c.municipio(), c.provincia(), c.comunidadAutonoma(), c.telefono(), c.email(), c.web()), reloj.instant());
         despachos.guardar(despacho);
         eventos.publicar(new DatosDespachoActualizados(despacho.id(), contexto.usuarioId(), reloj.instant()));
-        return aVista(despacho);
+        return aVista(cargar(despacho.id())); // con la versión nueva, para la siguiente edición
     }
 
     @Override
@@ -85,6 +89,6 @@ public class DespachoService implements CrearDespachoUseCase, GestionarDespachoU
         var x = d.datos();
         return new DespachoVista(d.id().toString(), x.nombre(), x.razonSocial(), x.nif(), x.direccion(), x.codigoPostal(),
                 x.municipio(), x.provincia(), x.comunidadAutonoma(), x.telefono(), x.email(), x.web(),
-                d.creadoEn(), d.actualizadoEn());
+                d.creadoEn(), d.actualizadoEn(), d.version());
     }
 }

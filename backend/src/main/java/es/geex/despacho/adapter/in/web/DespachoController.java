@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,7 +39,7 @@ class DespachoController {
     @Operation(operationId = "actualizarDespacho", summary = "Modificar los datos del despacho")
     DespachoVista actualizar(@Valid @RequestBody DatosDespachoPeticion p) {
         return despacho.actualizar(new DatosDespachoComando(p.nombre(), p.razonSocial(), p.nif(), p.direccion(),
-                p.codigoPostal(), p.municipio(), p.provincia(), p.comunidadAutonoma(), p.telefono(), p.email(), p.web()));
+                p.codigoPostal(), p.municipio(), p.provincia(), p.comunidadAutonoma(), p.telefono(), p.email(), p.web(), p.version()));
     }
 
     record DatosDespachoPeticion(
@@ -52,6 +53,7 @@ class DespachoController {
             @NotNull ComunidadAutonoma comunidadAutonoma,
             @Size(max = 30) String telefono,
             @Email @Size(max = 254) String email,
-            @Size(max = 250) String web) {
+            @Size(max = 250) String web,
+            @NotNull @PositiveOrZero Long version) {
     }
 }

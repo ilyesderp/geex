@@ -39,7 +39,7 @@ public class AuditoriaService implements AuditoriaUseCase {
     public PaginaAuditoria consultar(FiltroAuditoria f) {
         contexto.exigir(Permiso.AUDITORIA_VER);
         int tamano = Math.clamp(f.tamano(), 1, TAMANO_MAXIMO);
-        int pagina = Math.max(f.pagina(), 0);
+        int pagina = Math.clamp(f.pagina(), 0, Integer.MAX_VALUE / TAMANO_MAXIMO);
         String accion = f.accion() == null || f.accion().isBlank() ? null : f.accion();
         Instant desde = f.desde() == null ? null : f.desde().atStartOfDay(MADRID).toInstant();
         Instant hasta = f.hasta() == null ? null : f.hasta().plusDays(1).atStartOfDay(MADRID).toInstant();

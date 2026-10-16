@@ -129,13 +129,18 @@
             "minLength" : 0,
             "type" : "string"
           },
+          "version" : {
+            "format" : "int64",
+            "minimum" : 0,
+            "type" : "integer"
+          },
           "web" : {
             "maxLength" : 250,
             "minLength" : 0,
             "type" : "string"
           }
         },
-        "required" : [ "comunidadAutonoma", "municipio", "nombre", "provincia" ],
+        "required" : [ "comunidadAutonoma", "municipio", "nombre", "provincia", "version" ],
         "type" : "object"
       },
       "DescripcionPermiso" : {
@@ -217,11 +222,15 @@
           "telefono" : {
             "type" : "string"
           },
+          "version" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
           "web" : {
             "type" : "string"
           }
         },
-        "required" : [ "actualizadoEn", "codigoPostal", "comunidadAutonoma", "creadoEn", "direccion", "email", "id", "municipio", "nif", "nombre", "provincia", "razonSocial", "telefono", "web" ],
+        "required" : [ "actualizadoEn", "codigoPostal", "comunidadAutonoma", "creadoEn", "direccion", "email", "id", "municipio", "nif", "nombre", "provincia", "razonSocial", "telefono", "version", "web" ],
         "type" : "object"
       },
       "DiaInhabilVista" : {

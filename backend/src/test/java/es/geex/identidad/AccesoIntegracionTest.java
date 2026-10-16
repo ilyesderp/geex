@@ -3,6 +3,9 @@ package es.geex.identidad;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import es.geex.soporte.PruebaIntegracion;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -88,12 +91,44 @@ class AccesoIntegracionTest extends PruebaIntegracion {
     void el_despacho_nunca_se_queda_sin_titular() {
         String idTitular = get("/api/yo", sesionTitular.token()).json().get("usuarioId").asString();
 
-        var degradar = put("/api/usuarios/" + idTitular + "/rol", sesionTitular.token(), "{\"rol\":\"GESTOR\"}");
-        assertThat(degradar.estado()).isEqualTo(422);
-        assertThat(degradar.codigoError()).isEqualTo("ULTIMO_TITULAR");
+        var degradarse = put("/api/usuarios/" + idTitular + "/rol", sesionTitular.token(), "{\"rol\":\"GESTOR\"}");
+        assertThat(degradarse.estado()).isEqualTo(422);
+        assertThat(degradarse.codigoError()).isEqualTo("NO_AUTOCAMBIO_ROL");
 
         var desactivarse = post("/api/usuarios/" + idTitular + "/desactivar", sesionTitular.token(), null);
         assertThat(desactivarse.codigoError()).isEqualTo("NO_AUTODESACTIVAR");
+    }
+
+    @Test
+    void quien_gestiona_usuarios_sin_ser_titular_no_puede_hacerse_con_el_despacho() {
+        // El titular da a los gestores la gestión de usuarios y de permisos
+        concederAlGestor("USUARIOS_GESTIONAR", "PERMISOS_GESTIONAR");
+        Sesion gestor = altaUsuario(sesionTitular, "GESTOR");
+        String idGestor = usuarioId(gestor);
+        String idTitular = usuarioId(sesionTitular);
+
+        var ascenderse = put("/api/usuarios/" + idGestor + "/rol", gestor.token(), "{\"rol\":\"TITULAR\"}");
+        assertThat(ascenderse.codigoError()).isEqualTo("NO_AUTOCAMBIO_ROL");
+
+        var invitarTitular = post("/api/usuarios", gestor.token(),
+                "{\"email\":\"complice@despacho.test\",\"nombre\":\"C\",\"apellidos\":\"C\",\"rol\":\"TITULAR\"}");
+        assertThat(invitarTitular.estado()).isEqualTo(403);
+        assertThat(invitarTitular.codigoError()).isEqualTo("SOLO_TITULAR");
+
+        var degradarTitular = put("/api/usuarios/" + idTitular + "/rol", gestor.token(), "{\"rol\":\"GESTOR\"}");
+        assertThat(degradarTitular.codigoError()).isEqualTo("SOLO_TITULAR");
+
+        var desactivarTitular = post("/api/usuarios/" + idTitular + "/desactivar", gestor.token(), null);
+        assertThat(desactivarTitular.codigoError()).isEqualTo("SOLO_TITULAR");
+
+        var autoPermisos = put("/api/roles/GESTOR/permisos", gestor.token(), "{\"permisos\":[\"AUDITORIA_VER\"]}");
+        assertThat(autoPermisos.estado()).isEqualTo(403);
+        assertThat(autoPermisos.codigoError()).isEqualTo("NO_AUTOPERMISOS");
+
+        // Lo que sí puede hacer: gestionar al resto del personal
+        Sesion administrativo = altaUsuario(gestor, "ADMINISTRATIVO");
+        assertThat(put("/api/usuarios/" + usuarioId(administrativo) + "/rol", gestor.token(),
+                "{\"rol\":\"ABOGADO\"}").estado()).isEqualTo(200);
     }
 
     @Test
@@ -142,5 +177,19 @@ class AccesoIntegracionTest extends PruebaIntegracion {
         var entrada = get("/api/auditoria?accion=USUARIO_INVITADO", sesionTitular.token()).json().get("entradas").get(0);
         assertThat(entrada.get("actor").asString()).isEqualTo("Ana Titular");
         assertThat(entrada.get("descripcion").asString()).contains("aud@despacho.test");
+    }
+
+    /** Añade permisos al rol Gestor conservando los que ya tiene. */
+    private void concederAlGestor(String... permisos) {
+        var actuales = new LinkedHashSet<String>();
+        for (var rol : get("/api/roles", sesionTitular.token()).json()) {
+            if (rol.get("rol").asString().equals("GESTOR")) {
+                rol.get("permisos").forEach(p -> actuales.add(p.asString()));
+            }
+        }
+        actuales.addAll(List.of(permisos));
+        String lista = actuales.stream().map(p -> "\"" + p + "\"").collect(Collectors.joining(","));
+        assertThat(put("/api/roles/GESTOR/permisos", sesionTitular.token(), "{\"permisos\":[" + lista + "]}").estado())
+                .isEqualTo(200);
     }
 }

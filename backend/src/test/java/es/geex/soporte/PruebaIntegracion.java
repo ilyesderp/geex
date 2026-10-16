@@ -126,6 +126,28 @@ public abstract class PruebaIntegracion {
         return new Sesion(respuesta.json().get("tokenAcceso").asString(), respuesta.cookieRefresco());
     }
 
+    /** Invita a un usuario con el rol indicado, activa su cuenta y abre sesión con él. */
+    protected Sesion altaUsuario(Sesion admin, String rol) {
+        String email = rol.toLowerCase() + "-" + UUID.randomUUID() + "@despacho.test";
+        var invitacion = post("/api/usuarios", admin.token(),
+                "{\"email\":\"%s\",\"nombre\":\"Prueba\",\"apellidos\":\"%s\",\"rol\":\"%s\"}"
+                        .formatted(email, rol, rol));
+        if (invitacion.estado() != 201) {
+            throw new AssertionError("No se pudo invitar: " + invitacion);
+        }
+        String contrasena = contrasenaNueva();
+        var activacion = post("/api/cuenta/activar", null, "{\"token\":\"%s\",\"contrasena\":\"%s\"}"
+                .formatted(correos.ultimoToken("INVITACION", email), contrasena));
+        if (activacion.estado() != 204) {
+            throw new AssertionError("No se pudo activar: " + activacion);
+        }
+        return iniciarSesion(new Credenciales(email, contrasena));
+    }
+
+    protected String usuarioId(Sesion sesion) {
+        return get("/api/yo", sesion.token()).json().get("usuarioId").asString();
+    }
+
     protected static String contrasenaNueva() {
         return "Clave-" + aleatorio(12);
     }

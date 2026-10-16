@@ -17,10 +17,9 @@ public class Membresia {
     private boolean activa;
     private final Instant creadaEn;
     private Instant ultimoUso;
-    private final long version;
 
     private Membresia(UUID id, UsuarioId usuarioId, DespachoId despachoId, Rol rol, boolean activa,
-                      Instant creadaEn, Instant ultimoUso, long version) {
+                      Instant creadaEn, Instant ultimoUso) {
         this.id = Objects.requireNonNull(id);
         this.usuarioId = Objects.requireNonNull(usuarioId);
         this.despachoId = Objects.requireNonNull(despachoId);
@@ -28,16 +27,15 @@ public class Membresia {
         this.activa = activa;
         this.creadaEn = creadaEn;
         this.ultimoUso = ultimoUso;
-        this.version = version;
     }
 
     public static Membresia nueva(UsuarioId usuario, DespachoId despacho, Rol rol, Instant ahora) {
-        return new Membresia(UUID.randomUUID(), usuario, despacho, rol, true, ahora, null, 0);
+        return new Membresia(UUID.randomUUID(), usuario, despacho, rol, true, ahora, null);
     }
 
     public static Membresia reconstruir(UUID id, UsuarioId usuario, DespachoId despacho, Rol rol, boolean activa,
-                                        Instant creadaEn, Instant ultimoUso, long version) {
-        return new Membresia(id, usuario, despacho, rol, activa, creadaEn, ultimoUso, version);
+                                        Instant creadaEn, Instant ultimoUso) {
+        return new Membresia(id, usuario, despacho, rol, activa, creadaEn, ultimoUso);
     }
 
     public void cambiarRol(Rol nuevo) {
@@ -63,5 +61,4 @@ public class Membresia {
     public boolean activa() { return activa; }
     public Instant creadaEn() { return creadaEn; }
     public Instant ultimoUso() { return ultimoUso; }
-    public long version() { return version; }
 }
