@@ -25,6 +25,8 @@ data/
 *.pdf
 !docs/**/*.pdf
 privado/
+# Instrucciones personales para el asistente de IA (ver CLAUDE.md)
+CLAUDE.local.md
 
 # ── Backend (Maven) ──
 backend/target/

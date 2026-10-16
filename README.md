@@ -50,7 +50,7 @@ The project is being built in phases. **Phase 0 (foundations) is complete**; see
 | Backend | Java 25 · Spring Boot 4.1 · Spring Security (OAuth2 Resource Server, JWT) · Spring Data JPA + JDBC · Spring Modulith 2.1 · Flyway · springdoc-openapi |
 | Database | PostgreSQL 17 (+ pgvector, prepared for the AI phase) with Row Level Security |
 | Frontend | Angular 22 · Angular Material 3 · TypeScript (strict) · RxJS + signals · client generated with OpenAPI Generator |
-| Testing | JUnit 5 · AssertJ · Testcontainers · ArchUnit · Spring Modulith tests · Vitest · Playwright (end-to-end smoke run) |
+| Testing | JUnit 5 · AssertJ · Testcontainers · ArchUnit · Spring Modulith tests · Vitest · Playwright end-to-end tests in CI (planned, Phase 1) |
 | Quality & security | GitHub Actions · CodeQL · gitleaks · Dependabot · dependency review · JaCoCo |
 | Delivery | Docker multi-stage images (non-root) · GitHub Container Registry · Docker Compose |
 
