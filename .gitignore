@@ -1,0 +1,49 @@
+# ── Secretos y configuración local (NUNCA se suben al repositorio) ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+secrets/
+**/application-local.yml
+**/application-local.properties
+
+# ── Datos locales ──
+*.dump
+*.sql.gz
+*.backup
+uploads/
+almacenamiento/
+data/
+
+# ── Documentos privados (especificación original, datos reales) ──
+*.pdf
+!docs/**/*.pdf
+privado/
+
+# ── Backend (Maven) ──
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# ── Frontend (Angular) ──
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/src/app/api/generated/
+frontend/test-results/
+frontend/playwright-report/
+
+# ── IDEs y sistema ──
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.log
