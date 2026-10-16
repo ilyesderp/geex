@@ -1,0 +1,99 @@
+<section class="geex-pagina">
+  <div class="geex-pagina__cabecera">
+    <div>
+      <h1>Listas desplegables</h1>
+      <p>Valores que aparecen en los desplegables del programa. Los predefinidos se pueden renombrar,
+        reordenar o desactivar; los que añadas tú también se pueden eliminar.</p>
+    </div>
+  </div>
+
+  <div class="listas">
+    <nav class="geex-tarjeta catalogos" aria-label="Listas">
+      @for (grupo of grupos(); track grupo.nombre) {
+        <h3 class="catalogos__grupo">{{ grupo.nombre }}</h3>
+        @for (catalogo of grupo.catalogos; track catalogo.tipo) {
+          <button type="button" class="catalogos__item"
+                  [class.catalogos__item--activo]="seleccionado()?.tipo === catalogo.tipo"
+                  [attr.aria-current]="seleccionado()?.tipo === catalogo.tipo ? 'true' : null"
+                  (click)="seleccionar(catalogo)">
+            <span>{{ catalogo.nombre }}</span>
+            <span class="catalogos__cuenta">{{ catalogo.activos }}</span>
+          </button>
+        }
+      }
+    </nav>
+
+    <div class="geex-tarjeta valores">
+      @if (seleccionado(); as catalogo) {
+        <div class="valores__cabecera">
+          <div>
+            <h2>{{ catalogo.nombre }}</h2>
+            <p class="geex-texto-suave">{{ catalogo.descripcion }} · {{ catalogo.activos }} activos de {{ catalogo.valores }}</p>
+          </div>
+          <mat-form-field class="valores__filtro">
+            <mat-label>Filtrar</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput type="search" [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" />
+          </mat-form-field>
+        </div>
+
+        @if (puedeEditar) {
+          <form class="valores__nuevo" (ngSubmit)="anadir()">
+            <mat-form-field>
+              <mat-label>Nuevo valor</mat-label>
+              <input matInput name="nueva" [(ngModel)]="nuevaEtiqueta" maxlength="200" />
+            </mat-form-field>
+            <button matButton="filled" type="submit" [disabled]="!nuevaEtiqueta.trim()">
+              <mat-icon>add</mat-icon> Añadir
+            </button>
+          </form>
+        }
+
+        @if (cargandoValores()) { <mat-progress-bar mode="indeterminate" /> }
+
+        <ul class="lista" cdkDropList [cdkDropListDisabled]="!puedeReordenar()" (cdkDropListDropped)="soltar($event)"
+            aria-label="Valores de la lista">
+          @for (valor of valoresFiltrados(); track valor.id) {
+            <li class="valor" cdkDrag [class.valor--inactivo]="!valor.activo">
+              @if (puedeReordenar()) {
+                <mat-icon class="valor__asa" cdkDragHandle aria-label="Arrastrar para reordenar">drag_indicator</mat-icon>
+              }
+              <div class="valor__texto">
+                @if (editando() === valor.id) {
+                  <input class="valor__edicion" [(ngModel)]="etiquetaEditada" (keydown.enter)="guardarEtiqueta(valor)"
+                         (keydown.escape)="editando.set(null)" (blur)="guardarEtiqueta(valor)" maxlength="200"
+                         aria-label="Editar valor" />
+                } @else {
+                  <span>{{ valor.etiqueta }}</span>
+                  @if (valor.sistema) { <span class="geex-etiqueta">Predefinido</span> }
+                }
+                <code>{{ valor.codigo }}</code>
+              </div>
+              <mat-slide-toggle [checked]="valor.activo" (change)="cambiarActivo(valor, $event.checked)"
+                                [disabled]="!puedeEditar" [aria-label]="'Activo: ' + valor.etiqueta" />
+              @if (puedeEditar) {
+                <button matIconButton type="button" (click)="empezarEdicion(valor)" matTooltip="Renombrar"
+                        aria-label="Renombrar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                @if (!valor.sistema) {
+                  <button matIconButton type="button" class="peligro" (click)="eliminar(valor)" matTooltip="Eliminar"
+                          aria-label="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                } @else {
+                  <span class="hueco"></span>
+                }
+              }
+            </li>
+          } @empty {
+            <li class="geex-vacio">No hay valores que coincidan.</li>
+          }
+        </ul>
+        @if (puedeEditar && filtro()) {
+          <p class="geex-texto-suave nota">Quita el filtro para poder reordenar arrastrando.</p>
+        }
+      }
+    </div>
+  </div>
+</section>

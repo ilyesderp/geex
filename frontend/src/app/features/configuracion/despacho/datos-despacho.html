@@ -1,0 +1,73 @@
+<section class="geex-pagina">
+  <div class="geex-pagina__cabecera">
+    <div>
+      <h1>Datos del despacho</h1>
+      <p>Aparecen en documentos y facturas. El municipio y la comunidad determinan el calendario de días inhábiles.</p>
+    </div>
+  </div>
+
+  <div class="geex-tarjeta">
+    @if (cargando()) {
+      <mat-progress-bar mode="indeterminate" />
+    } @else {
+      <form class="geex-formulario geex-formulario--2col" [formGroup]="formulario" (ngSubmit)="guardar()">
+        <mat-form-field class="geex-col-completa">
+          <mat-label>Nombre comercial</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Razón social</mat-label>
+          <input matInput formControlName="razonSocial" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>NIF / CIF</mat-label>
+          <input matInput formControlName="nif" />
+        </mat-form-field>
+        <mat-form-field class="geex-col-completa">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Código postal</mat-label>
+          <input matInput formControlName="codigoPostal" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Municipio</mat-label>
+          <input matInput formControlName="municipio" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Provincia</mat-label>
+          <input matInput formControlName="provincia" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Comunidad autónoma</mat-label>
+          <mat-select formControlName="comunidadAutonoma">
+            @for (c of comunidades; track c.valor) {
+              <mat-option [value]="c.valor">{{ c.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" />
+          @if (formulario.controls.email.hasError('email')) { <mat-error>Correo no válido</mat-error> }
+        </mat-form-field>
+        <mat-form-field class="geex-col-completa">
+          <mat-label>Web</mat-label>
+          <input matInput formControlName="web" />
+        </mat-form-field>
+        @if (puedeEditar) {
+          <div class="geex-col-completa geex-acciones">
+            <button matButton="filled" type="submit" [disabled]="formulario.pristine || guardando()">
+              <mat-icon>save</mat-icon> Guardar cambios
+            </button>
+          </div>
+        }
+      </form>
+    }
+  </div>
+</section>

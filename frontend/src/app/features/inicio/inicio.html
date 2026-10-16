@@ -1,0 +1,29 @@
+<section class="geex-pagina">
+  <div class="bienvenida">
+    <div>
+      <h1>{{ saludo() }}</h1>
+      <p class="geex-texto-suave fecha">{{ hoy }} · {{ sesion.perfil()?.despachoActual?.nombre }}</p>
+    </div>
+    <div class="progreso" title="Apartados disponibles en esta versión">
+      <span class="progreso__cifra">{{ disponibles }} / {{ modulos.length }}</span>
+      <span class="geex-texto-suave">apartados disponibles · fase {{ faseActual }}</span>
+    </div>
+  </div>
+
+  <nav class="rejilla" aria-label="Apartados de GEEX">
+    @for (modulo of modulos; track modulo.clave) {
+      <a class="mosaico" [class.mosaico--pendiente]="!modulo.ruta"
+         [routerLink]="modulo.ruta ?? ['/modulo', modulo.clave]">
+        <span class="mosaico__numero">{{ modulo.numero }}</span>
+        <span class="mosaico__icono"><mat-icon aria-hidden="true">{{ modulo.icono }}</mat-icon></span>
+        <span class="mosaico__nombre">{{ modulo.nombre }}</span>
+        <span class="mosaico__descripcion">{{ modulo.descripcion }}</span>
+        @if (modulo.ruta) {
+          <span class="mosaico__estado mosaico__estado--listo"><mat-icon aria-hidden="true">check</mat-icon> Disponible</span>
+        } @else {
+          <span class="mosaico__estado">Fase {{ modulo.fase }}</span>
+        }
+      </a>
+    }
+  </nav>
+</section>

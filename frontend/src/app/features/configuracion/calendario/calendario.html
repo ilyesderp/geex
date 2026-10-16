@@ -1,0 +1,123 @@
+<section class="geex-pagina">
+  <div class="geex-pagina__cabecera">
+    <div>
+      <h1>Calendario laboral</h1>
+      <p>Días inhábiles para el cómputo de plazos (art. 30 Ley 39/2015). Sábados y domingos son siempre inhábiles.</p>
+    </div>
+    <div class="controles">
+      <mat-form-field subscriptSizing="fixed">
+        <mat-label>Año</mat-label>
+        <mat-select [value]="anio()" (selectionChange)="cambiarAnio($event.value)">
+          @for (a of anios; track a) { <mat-option [value]="a">{{ a }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      @if (puedeEditar) {
+        <button matButton="filled" type="button" (click)="abrir('local')"><mat-icon>add</mat-icon> Festivo local</button>
+      }
+      @if (calendario()?.puedeEditarGlobales) {
+        <button matButton="outlined" type="button" (click)="abrir('global')">
+          <mat-icon>public</mat-icon> Festivo nacional / autonómico
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="geex-tarjeta">
+    @if (calendario(); as cal) {
+      <div class="resumen">
+        <div><strong>{{ conteo().nacional }}</strong> nacionales</div>
+        <div><strong>{{ conteo().autonomico }}</strong> de {{ cal.nombreComunidad }}</div>
+        <div><strong>{{ conteo().local }}</strong> locales del despacho</div>
+      </div>
+    }
+    @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
+
+    <div class="geex-tabla-contenedor">
+      <table mat-table [dataSource]="calendario()?.dias ?? []" class="geex-tabla">
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let dia" class="fecha">
+            {{ dia.fecha | date: 'dd/MM/yyyy' }}
+            <small>{{ dia.fecha | date: 'EEEE' }}</small>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Festivo</th>
+          <td mat-cell *matCellDef="let dia">
+            {{ dia.descripcion }}
+            @if (dia.provisional) { <span class="geex-etiqueta geex-etiqueta--aviso provisional">Provisional</span> }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="ambito">
+          <th mat-header-cell *matHeaderCellDef>Ámbito</th>
+          <td mat-cell *matCellDef="let dia"><span class="geex-etiqueta" [class]="claseAmbito(dia)">{{ dia.ambitoEtiqueta }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef class="col-acciones"><span class="cdk-visually-hidden">Acciones</span></th>
+          <td mat-cell *matCellDef="let dia" class="col-acciones">
+            @if (dia.editable) {
+              <button matIconButton type="button" class="peligro" (click)="eliminar(dia)" aria-label="Eliminar festivo">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+        <tr class="mat-mdc-row" *matNoDataRow>
+          <td class="geex-vacio" [attr.colspan]="columnas.length">No hay festivos cargados para este año.</td>
+        </tr>
+      </table>
+    </div>
+    <p class="nota geex-texto-suave">
+      Datos de 2026: calendario oficial de días inhábiles (BOE-A-2025-23702). Los festivos marcados como
+      provisionales se confirmarán cuando se publique el calendario del año.
+    </p>
+  </div>
+</section>
+
+<ng-template #dialogoFestivo>
+  <h2 mat-dialog-title>{{ tipoDialogo() === 'local' ? 'Añadir festivo local' : 'Añadir festivo nacional o autonómico' }}</h2>
+  <mat-dialog-content>
+    <div class="geex-formulario">
+      @if (tipoDialogo() === 'global') {
+        <mat-form-field>
+          <mat-label>Ámbito</mat-label>
+          <mat-select [(ngModel)]="nuevoAmbito">
+            @for (a of ambitos; track a.valor) { <mat-option [value]="a.valor">{{ a.nombre }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+        @if (nuevoAmbito === 'AUTONOMICO') {
+          <mat-form-field>
+            <mat-label>Comunidad autónoma</mat-label>
+            <mat-select [(ngModel)]="nuevaComunidad">
+              @for (c of comunidades; track c.valor) { <mat-option [value]="c.valor">{{ c.nombre }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+        }
+      }
+      <mat-form-field>
+        <mat-label>Fecha</mat-label>
+        <input matInput [matDatepicker]="selector" [matDatepickerFilter]="soloLaborables" [(ngModel)]="nuevaFecha" />
+        <mat-datepicker-toggle matIconSuffix [for]="selector" />
+        <mat-datepicker #selector />
+        <mat-hint>dd/mm/aaaa · los fines de semana ya son inhábiles</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Nombre del festivo</mat-label>
+        <input matInput [(ngModel)]="nuevaDescripcion" maxlength="200"
+               [placeholder]="tipoDialogo() === 'local' ? 'Ej.: Hogueras de San Juan' : 'Ej.: Fiesta Nacional de España'" />
+      </mat-form-field>
+      @if (tipoDialogo() === 'global') {
+        <mat-checkbox [(ngModel)]="nuevoProvisional">Provisional (pendiente de publicación en el BOE)</mat-checkbox>
+      }
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" mat-dialog-close>Cancelar</button>
+    <button matButton="filled" type="button" [disabled]="!nuevaFecha || !nuevaDescripcion.trim()" (click)="guardar()">
+      <mat-icon>check</mat-icon> Añadir
+    </button>
+  </mat-dialog-actions>
+</ng-template>

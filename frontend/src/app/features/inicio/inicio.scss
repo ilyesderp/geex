@@ -1,0 +1,132 @@
+.bienvenida {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.fecha {
+  margin: 6px 0 0;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.progreso {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.85rem;
+}
+
+.progreso__cifra {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--geex-marino);
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.mosaico {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 18px 16px;
+  min-height: 178px;
+  background: var(--geex-superficie);
+  border: 1px solid var(--geex-borde);
+  border-radius: var(--geex-radio);
+  box-shadow: var(--geex-sombra);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--geex-sombra-elevada);
+    border-color: var(--geex-azul);
+    outline: none;
+  }
+}
+
+.mosaico--pendiente {
+  background: #fbfcfe;
+
+  .mosaico__icono {
+    background: #eef1f6;
+    color: #7a8599;
+  }
+
+  .mosaico__nombre {
+    color: #4a5468;
+  }
+}
+
+.mosaico__numero {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9aa4b6;
+}
+
+.mosaico__icono {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #e8f0fb;
+  color: var(--geex-azul);
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.mosaico__nombre {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--geex-marino);
+}
+
+.mosaico__descripcion {
+  font-size: 0.84rem;
+  color: var(--geex-texto-suave);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.mosaico__estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #eef1f6;
+  color: #5b6578;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.mosaico__estado--listo {
+  background: #e3f5f2;
+  color: #1d7a6f;
+}

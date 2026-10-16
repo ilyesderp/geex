@@ -1,0 +1,52 @@
+<header class="barra">
+  <a routerLink="/" class="barra__marca" aria-label="GEEX, ir al inicio">
+    <geex-logo />
+  </a>
+
+  <div class="barra__modulo" aria-live="polite">
+    <mat-icon aria-hidden="true">{{ modulo().icono }}</mat-icon>
+    <span>{{ modulo().titulo }}</span>
+  </div>
+
+  @if (sesion.perfil(); as perfil) {
+    <div class="barra__derecha">
+      <div class="barra__despacho">
+        <mat-icon aria-hidden="true">apartment</mat-icon>
+        <span>{{ perfil.despachoActual.nombre }}</span>
+      </div>
+      <button type="button" class="barra__usuario" [matMenuTriggerFor]="menuUsuario" aria-label="Menú de usuario">
+        <span class="barra__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="barra__nombre">
+          <strong>{{ perfil.nombre }}</strong>
+          <small>{{ perfil.despachoActual.rolEtiqueta }}</small>
+        </span>
+        <mat-icon aria-hidden="true">expand_more</mat-icon>
+      </button>
+
+      <mat-menu #menuUsuario="matMenu" xPosition="before">
+        <div class="menu__cabecera">
+          <strong>{{ perfil.nombre }} {{ perfil.apellidos }}</strong>
+          <small>{{ perfil.email }}</small>
+        </div>
+        <a mat-menu-item routerLink="/mi-cuenta"><mat-icon>person</mat-icon>Mi cuenta</a>
+        <a mat-menu-item routerLink="/configuracion"><mat-icon>settings</mat-icon>Configuración</a>
+        @if (otrosDespachos().length) {
+          <button mat-menu-item [matMenuTriggerFor]="menuDespachos"><mat-icon>swap_horiz</mat-icon>Cambiar de despacho</button>
+        }
+        <button mat-menu-item (click)="sesion.cerrarSesion()"><mat-icon>logout</mat-icon>Cerrar sesión</button>
+      </mat-menu>
+
+      <mat-menu #menuDespachos="matMenu">
+        @for (d of otrosDespachos(); track d.id) {
+          <button mat-menu-item (click)="sesion.cambiarDespacho(d.id)">
+            <mat-icon>apartment</mat-icon>{{ d.nombre }}
+          </button>
+        }
+      </mat-menu>
+    </div>
+  }
+</header>
+
+<main class="contenido">
+  <router-outlet />
+</main>

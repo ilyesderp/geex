@@ -1,0 +1,65 @@
+.matriz-contenedor {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.matriz {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+
+  th,
+  td {
+    padding: 4px 14px;
+    border-bottom: 1px solid var(--geex-borde);
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    font-weight: 650;
+    text-align: center;
+    z-index: 1;
+  }
+
+  tbody tr:hover td {
+    background: #fafcff;
+  }
+}
+
+.matriz__permiso {
+  text-align: left !important;
+  min-width: 280px;
+}
+
+.matriz__rol {
+  min-width: 120px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+
+  .candado {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-left: 2px;
+    color: var(--geex-texto-suave);
+  }
+}
+
+.matriz__celda {
+  text-align: center;
+}
+
+.matriz__grupo td {
+  background: #f1f5f9 !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--geex-texto-suave);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
