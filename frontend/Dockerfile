@@ -3,7 +3,7 @@
 #   docker build -f frontend/Dockerfile -t geex-frontend .
 
 # ── 1. Compilación ──────────────────────────────────────────────────────────
-FROM node:22-bookworm AS construccion
+FROM node:25-bookworm AS construccion
 # El generador del cliente OpenAPI necesita Java
 RUN apt-get update \
     && apt-get install -y --no-install-recommends default-jre-headless \
