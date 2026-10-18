@@ -23,6 +23,7 @@ class AislamientoDespachosTest extends PruebaIntegracion {
     @Autowired
     CrearDespachoUseCase crearDespacho;
 
+    private Credenciales titular;
     private Sesion sesionA;
     private Sesion sesionB;
     private DespachoId despachoA;
@@ -31,7 +32,7 @@ class AislamientoDespachosTest extends PruebaIntegracion {
     @BeforeEach
     void preparar() throws SQLException {
         reiniciarBaseDeDatos();
-        Credenciales titular = instalar("Despacho A (Alicante)");
+        titular = instalar("Despacho A (Alicante)");
         sesionA = iniciarSesion(titular);
         despachoA = DespachoId.de(get("/api/yo", sesionA.token()).json().get("despachoActual").get("id").asString());
 
@@ -125,6 +126,64 @@ class AislamientoDespachosTest extends PruebaIntegracion {
             rs.next();
             assertThat(rs.getLong(1)).isZero();
             assertThat(rs.getLong(2)).isZero();
+        }
+    }
+
+    @Test
+    void la_base_de_datos_tampoco_deja_ver_usuarios_sesiones_ni_enlaces_de_otro_despacho() throws SQLException {
+        Sesion gestorDeB = altaUsuario(sesionB, "GESTOR");
+        String idGestorDeB = usuarioId(gestorDeB);
+        try (var c = conexionAplicacion()) {
+            try (var contexto = c.prepareStatement("select set_config('app.despacho_id', ?, false)")) {
+                contexto.setString(1, despachoA.toString());
+                contexto.execute();
+            }
+            assertThat(contarConContexto(c, "select count(*) from usuarios where id = ?", UUID.fromString(idGestorDeB)))
+                    .as("un usuario que solo trabaja en B no es visible desde A").isZero();
+            assertThat(contarConContexto(c, "select count(*) from sesiones_refresco where despacho_id = ?",
+                    despachoB.valor())).as("sesiones de B vistas desde A").isZero();
+            assertThat(contarConContexto(c, "select count(*) from tokens_un_uso where despacho_id = ?",
+                    despachoB.valor())).as("enlaces de B vistos desde A").isZero();
+            assertThat(contarConContexto(c, "select count(*) from usuarios where id = ?",
+                    UUID.fromString(usuarioId(sesionA)))).as("A sí ve a sus miembros").isOne();
+        }
+        try (var c = conexionAplicacion(); var s = c.createStatement(); var rs = s.executeQuery(
+                "select (select count(*) from usuarios), (select count(*) from sesiones_refresco), "
+                        + "(select count(*) from tokens_un_uso)")) {
+            rs.next();
+            assertThat(rs.getLong(1) + rs.getLong(2) + rs.getLong(3)).as("sin contexto no se ve nada").isZero();
+        }
+    }
+
+    @Test
+    void se_puede_invitar_a_quien_ya_trabaja_en_otro_despacho() {
+        Sesion gestorDeA = altaUsuario(sesionA, "GESTOR");
+        String email = get("/api/yo", gestorDeA.token()).json().get("email").asString();
+
+        var invitacion = post("/api/usuarios", sesionB.token(),
+                "{\"email\":\"%s\",\"nombre\":\"X\",\"apellidos\":\"Y\",\"rol\":\"ABOGADO\"}".formatted(email));
+        assertThat(invitacion.estado()).isEqualTo(201);
+        assertThat(invitacion.json().get("estado").asString()).as("ya tiene cuenta: no hay que activarla")
+                .isEqualTo("ACTIVO");
+        assertThat(get("/api/yo", gestorDeA.token()).json().get("despachos").size()).isEqualTo(2);
+    }
+
+    @Test
+    void cambiar_la_contrasena_en_un_despacho_cierra_tambien_las_sesiones_del_otro() {
+        var cambio = post("/api/cuenta/cambiar-contrasena", sesionA.token(),
+                "{\"actual\":\"%s\",\"nueva\":\"%s\"}".formatted(titular.contrasena(), contrasenaNueva()));
+        assertThat(cambio.estado()).isEqualTo(204);
+        assertThat(refrescar(sesionB.cookieRefresco()).estado()).as("la sesión del despacho B ya no se renueva")
+                .isEqualTo(401);
+    }
+
+    private static long contarConContexto(java.sql.Connection c, String sql, UUID parametro) throws SQLException {
+        try (var consulta = c.prepareStatement(sql)) {
+            consulta.setObject(1, parametro);
+            try (var rs = consulta.executeQuery()) {
+                rs.next();
+                return rs.getLong(1);
+            }
         }
     }
 

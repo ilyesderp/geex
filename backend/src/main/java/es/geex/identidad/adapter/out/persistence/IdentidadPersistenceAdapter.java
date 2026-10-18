@@ -1,5 +1,6 @@
 package es.geex.identidad.adapter.out.persistence;
 
+import es.geex.compartido.adapter.contexto.ContextoEjecucion;
 import es.geex.compartido.domain.DespachoId;
 import es.geex.compartido.domain.Permiso;
 import es.geex.compartido.domain.Rol;
@@ -26,6 +27,9 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /** Adaptador de persistencia del módulo Identidad: traduce entre entidades JPA y objetos de dominio. */
 @Component
@@ -40,14 +44,19 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
     private final SesionRefrescoJpaRepository sesiones;
     private final TokenUnUsoJpaRepository tokens;
     private final JdbcClient jdbc;
+    private final TransactionTemplate transaccionAparte;
 
     IdentidadPersistenceAdapter(UsuarioJpaRepository usuarios, MembresiaJpaRepository membresias,
-                                SesionRefrescoJpaRepository sesiones, TokenUnUsoJpaRepository tokens, JdbcClient jdbc) {
+                                SesionRefrescoJpaRepository sesiones, TokenUnUsoJpaRepository tokens, JdbcClient jdbc,
+                                PlatformTransactionManager gestorTransacciones) {
         this.usuarios = usuarios;
         this.membresias = membresias;
         this.sesiones = sesiones;
         this.tokens = tokens;
         this.jdbc = jdbc;
+        this.transaccionAparte = new TransactionTemplate(gestorTransacciones);
+        this.transaccionAparte.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        this.transaccionAparte.setReadOnly(true);
     }
 
     // ── Usuarios ─────────────────────────────────────────────────────────────
@@ -75,9 +84,16 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
         return usuarios.findById(id.valor()).map(IdentidadPersistenceAdapter::aDominio);
     }
 
+    /**
+     * Los usuarios son de toda la plataforma: buscar por correo (inicio de sesión, invitar a alguien que ya
+     * trabaja en otro despacho) tiene que verlos a todos. La conexión de la transacción en curso tiene fijado
+     * el despacho y la política RLS solo dejaría ver a sus miembros, así que esta consulta concreta se hace en
+     * modo sistema y en una transacción aparte (otra conexión, con su propio contexto).
+     */
     @Override
     public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarios.buscarPorEmail(email).map(IdentidadPersistenceAdapter::aDominio);
+        return ContextoEjecucion.comoSistema(() -> transaccionAparte.execute(estado ->
+                usuarios.buscarPorEmail(email).map(IdentidadPersistenceAdapter::aDominio)));
     }
 
     @Override
@@ -104,7 +120,7 @@ class IdentidadPersistenceAdapter implements UsuarioRepository, MembresiaReposit
         e.activa = m.activa();
         e.creadaEn = m.creadaEn();
         e.ultimoUso = m.ultimoUso();
-        membresias.save(e);
+        membresias.saveAndFlush(e); // la política RLS de usuarios mira las membresías: se vuelca ya
     }
 
     @Override
