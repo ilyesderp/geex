@@ -44,10 +44,10 @@
             <h2>{{ catalogo.nombre }}</h2>
             <p class="geex-texto-suave">{{ catalogo.descripcion }} · {{ catalogo.activos }} activos de {{ catalogo.valores }}</p>
           </div>
-          <mat-form-field class="valores__filtro">
-            <mat-label>Filtrar</mat-label>
-            <mat-icon matPrefix>search</mat-icon>
-            <input matInput type="search" [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" />
+          <mat-form-field class="valores__filtro geex-buscador">
+            <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+            <input matInput type="search" placeholder="Filtrar valores" aria-label="Filtrar los valores de la lista"
+                   [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" />
           </mat-form-field>
         </div>
 

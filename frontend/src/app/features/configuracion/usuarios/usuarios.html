@@ -10,14 +10,15 @@
   </div>
 
   <div class="geex-tarjeta">
-    <mat-form-field class="buscador">
-      <mat-label>Buscar</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput type="search" placeholder="Nombre, correo o rol" (input)="filtrar($any($event.target).value)" />
+    <!-- Buscador sin etiqueta flotante (patrón habitual): el texto de ayuda va en el placeholder -->
+    <mat-form-field class="buscador geex-buscador">
+      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+      <input matInput type="search" placeholder="Buscar por nombre, correo o rol" aria-label="Buscar usuarios"
+             (input)="filtrar($any($event.target).value)" />
     </mat-form-field>
 
     @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-    <div class="geex-tabla-contenedor">
+    <div class="geex-tabla-contenedor" tabindex="0" role="region" aria-label="Usuarios del despacho">
       <table mat-table [dataSource]="datos" matSort class="geex-tabla">
         <ng-container matColumnDef="nombre">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
