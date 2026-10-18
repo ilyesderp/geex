@@ -48,6 +48,9 @@ test('invitación: el titular invita a un gestor, que activa su cuenta desde el 
   await page.goto('/configuracion/usuarios');
   await page.getByRole('button', { name: 'Invitar usuario' }).click();
   const dialogo = page.getByRole('dialog');
+  // El diálogo pone el foco en «Nombre» al terminar de abrirse: hasta entonces, lo que se escriba en otro
+  // campo podría acabar en «Nombre» (pasó en CI)
+  await expect(dialogo.getByLabel('Nombre')).toBeFocused();
   await dialogo.getByLabel('Nombre').fill('Luis');
   await dialogo.getByLabel('Apellidos').fill('Gestor');
   await dialogo.getByLabel('Correo electrónico').fill(gestor.email);
