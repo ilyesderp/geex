@@ -10,6 +10,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -31,10 +33,13 @@ class CorreoNotificadorCuenta implements NotificadorCuenta {
 
     private final JavaMailSender correo;
     private final PropiedadesSeguridad propiedades;
+    private final TaskExecutor segundoPlano;
 
-    CorreoNotificadorCuenta(JavaMailSender correo, PropiedadesSeguridad propiedades) {
+    CorreoNotificadorCuenta(JavaMailSender correo, PropiedadesSeguridad propiedades,
+                            @Qualifier("applicationTaskExecutor") TaskExecutor segundoPlano) {
         this.correo = correo;
         this.propiedades = propiedades;
+        this.segundoPlano = segundoPlano;
     }
 
     @Override
@@ -74,8 +79,12 @@ class CorreoNotificadorCuenta implements NotificadorCuenta {
         return propiedades.urlFrontend() + ruta + "?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
     }
 
+    /**
+     * El correo sale después del commit (si la operación falla, no se envía un enlace que no existe) y en
+     * segundo plano: un servidor de correo lento o caído nunca hace esperar al usuario.
+     */
     private void enviarTrasConfirmar(String destinatario, String asunto, String html) {
-        Runnable envio = () -> enviar(destinatario, asunto, html);
+        Runnable envio = () -> segundoPlano.execute(() -> enviar(destinatario, asunto, html));
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override

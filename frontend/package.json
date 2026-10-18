@@ -11,6 +11,8 @@
     "pretest": "npm run api",
     "test": "ng test",
     "lint": "ng lint",
+    "e2e": "playwright test",
+    "e2e:visual": "node e2e/visual/ejecutar.mjs",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -24,6 +26,7 @@
     "@angular/material": "22.2.3",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "@fontsource-variable/inter": "5.3.0",
     "material-symbols": "0.48.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -32,8 +35,10 @@
     "@angular/build": "^22.2.3",
     "@angular/cli": "^22.2.3",
     "@angular/compiler-cli": "^22.2.0",
+    "@axe-core/playwright": "4.13.0",
     "@eslint/js": "^10.0.1",
     "@openapitools/openapi-generator-cli": "2.41.0",
+    "@playwright/test": "1.63.0",
     "angular-eslint": "22.6.0",
     "eslint": "^10.12.0",
     "jsdom": "^30.0.0",
@@ -41,5 +46,8 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "8.71.0",
     "vitest": "^5.0.0"
+  },
+  "overrides": {
+    "basic-ftp": "6.2.1"
   }
 }

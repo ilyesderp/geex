@@ -3,6 +3,8 @@ package es.geex.identidad.application.service;
 import es.geex.compartido.application.ContextoUsuario;
 import es.geex.compartido.application.PublicadorEventos;
 import es.geex.compartido.domain.DespachoId;
+import es.geex.compartido.domain.Rol;
+import es.geex.compartido.domain.UsuarioId;
 import es.geex.identidad.application.port.in.AutenticacionUseCase;
 import es.geex.identidad.application.port.out.CifradorContrasenas;
 import es.geex.identidad.application.port.out.EmisorTokensAcceso;
@@ -161,6 +163,18 @@ public class AutenticacionService implements AutenticacionUseCase {
         membresias.guardar(membresia.get());
         eventos.publicar(new SesionIniciada(destino, usuario.get().id(), origen.ip(), ahora));
         return new ResultadoSesion.Emitida(emitir(usuario.get(), membresia.get(), UUID.randomUUID(), origen, ahora));
+    }
+
+    @Override
+    public boolean consultarAccesoVigente(UsuarioId usuario, DespachoId despacho, Rol rol, int versionToken) {
+        boolean usuarioVigente = usuarios.buscar(usuario)
+                .filter(Usuario::activo)
+                .filter(u -> u.versionToken() == versionToken)
+                .isPresent();
+        return usuarioVigente && membresias.buscar(usuario, despacho)
+                .filter(Membresia::activa)
+                .filter(m -> m.rol() == rol)
+                .isPresent();
     }
 
     private SesionEmitida emitir(Usuario usuario, Membresia membresia, UUID familia, Origen origen, Instant ahora) {

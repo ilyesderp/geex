@@ -1,0 +1,131 @@
+# Pruebas de extremo a extremo (Playwright): levanta la aplicación completa —PostgreSQL y Mailpit en
+# Docker, el backend y el frontend— con secretos aleatorios generados en el propio runner, y recorre los
+# flujos clave en un navegador real (instalación, invitación por correo, edición concurrente, revocación
+# de acceso, diseño en móvil).
+name: E2E
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: E2E · flujos clave en el navegador
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Generar .env con secretos aleatorios (solo para esta ejecución)
+        run: bash scripts/setup.sh
+
+      - name: Arrancar PostgreSQL y Mailpit
+        run: docker compose up -d --wait
+
+      - name: Compilar y arrancar el backend
+        working-directory: backend
+        run: |
+          ./mvnw -B -ntp -DskipTests package
+          nohup java -jar target/geex-backend-*.jar --geex.seguridad.limitar-peticiones=false > ../backend.log 2>&1 &
+
+      - name: Preparar el frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run api
+          npx playwright install --with-deps chromium
+
+      - name: Arrancar el frontend
+        working-directory: frontend
+        run: nohup npx ng serve --port 4200 > ../frontend.log 2>&1 &
+
+      - name: Esperar a que la aplicación responda
+        run: |
+          for i in $(seq 1 90); do
+            if curl -sf http://localhost:8080/actuator/health > /dev/null && curl -sf http://localhost:4200 > /dev/null; then
+              echo "Aplicación lista"; exit 0
+            fi
+            sleep 2
+          done
+          echo "La aplicación no arrancó"; tail -50 backend.log; tail -50 frontend.log; exit 1
+
+      - name: Pruebas de extremo a extremo
+        working-directory: frontend
+        run: |
+          npx tsc -p e2e/tsconfig.json
+          npx playwright test
+
+      - name: Publicar informe y trazas si fallan
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: informe-e2e
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+            backend.log
+            frontend.log
+          retention-days: 7
+
+  visual:
+    name: E2E · aspecto y accesibilidad
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # El generador del cliente OpenAPI necesita Java
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Compilar el frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run api
+          npx ng build
+
+      # Dentro de la imagen oficial de Playwright (fijada por digest), igual que en local: mismas fuentes y
+      # mismo renderizado que las imágenes de referencia
+      - name: Comparar con las capturas de referencia y comprobar la accesibilidad
+        working-directory: frontend
+        run: npm run e2e:visual
+
+      - name: Publicar las diferencias si fallan
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: diferencias-visuales
+          path: |
+            frontend/playwright-report-visual/
+            frontend/test-results-visual/
+          retention-days: 7

@@ -14,8 +14,8 @@ html {
       tertiary: mat.$cyan-palette,
     ),
     typography: (
-      plain-family: ('Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
-      brand-family: ('Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
+      plain-family: ('Inter Variable', 'Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
+      brand-family: ('Inter Variable', 'Inter', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif),
     ),
     density: 0,
   ));
@@ -34,7 +34,7 @@ html {
   --geex-sombra-elevada: 0 10px 24px rgb(16 24 40 / 10%);
   --geex-radio: 12px;
   --geex-cabecera: 64px;
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter Variable', 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: var(--geex-texto);
 }
 
@@ -239,6 +239,13 @@ a {
 
 .geex-tabla-contenedor {
   overflow-x: auto;
+  border-radius: 4px;
+
+  // Se puede enfocar con el teclado para desplazarla (tabindex="0"): el foco debe verse
+  &:focus-visible {
+    outline: 2px solid var(--geex-azul);
+    outline-offset: 2px;
+  }
 }
 
 /* Notificaciones (snackbar) */
@@ -315,4 +322,87 @@ a {
     text-align: left;
     cursor: pointer;
   }
+}
+
+/*
+ * Buscadores y filtros de listas: icono delante y SIN etiqueta flotante (placeholder + aria-label).
+ * Con icono + etiqueta, Material desplaza la etiqueta con un transform dentro del hueco del borde y, con
+ * escalado de pantalla fraccionario (120 %, 125 %, 150 %…), ese tramo del borde se dibuja descuadrado.
+ */
+.geex-buscador {
+  margin-bottom: 12px;
+}
+
+/*
+ * Contorno de los campos (mat-form-field «outline») dibujado de una pieza.
+ *
+ * Material dibuja el contorno con tres trozos (inicio, hueco de la etiqueta y final). Con escalado de
+ * pantalla fraccionario (120 %, 125 %, 150 %…) las uniones entre trozos caen en medio píxel y aparecen
+ * marcas o huecos en los bordes. Aquí un pseudo-elemento dibuja el contorno completo con los mismos
+ * colores y grosores de Material para cada estado, y los trozos solo pintan el borde superior cuando hay
+ * hueco para la etiqueta flotante (donde la unión coincide con el hueco y no se ve).
+ * La especificidad está duplicada a propósito para ganar a los estilos del componente, que cargan después.
+ */
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-text-field--outlined {
+  --geex-contorno-color: var(--mat-form-field-outlined-outline-color, var(--mat-sys-outline));
+  --geex-contorno-ancho: var(--mat-form-field-outlined-outline-width, 1px);
+
+  &:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
+    --geex-contorno-color: var(--mat-form-field-outlined-hover-outline-color, var(--mat-sys-on-surface));
+  }
+
+  &:not(.mdc-text-field--disabled).mdc-text-field--focused {
+    --geex-contorno-color: var(--mat-form-field-outlined-focus-outline-color, var(--mat-sys-primary));
+    --geex-contorno-ancho: var(--mat-form-field-outlined-focus-outline-width, 2px);
+  }
+
+  &.mdc-text-field--disabled {
+    --geex-contorno-color: var(--mat-form-field-outlined-disabled-outline-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent));
+  }
+
+  &:not(.mdc-text-field--disabled).mdc-text-field--invalid {
+    --geex-contorno-color: var(--mat-form-field-outlined-error-outline-color, var(--mat-sys-error));
+  }
+
+  &:not(.mdc-text-field--disabled).mdc-text-field--invalid:not(.mdc-text-field--focused):hover {
+    --geex-contorno-color: var(--mat-form-field-outlined-error-hover-outline-color, var(--mat-sys-on-error-container));
+  }
+
+  &:not(.mdc-text-field--disabled).mdc-text-field--invalid.mdc-text-field--focused {
+    --geex-contorno-color: var(--mat-form-field-outlined-error-focus-outline-color, var(--mat-sys-error));
+  }
+
+  .mdc-notched-outline::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: var(--geex-contorno-ancho) solid var(--geex-contorno-color);
+    border-radius: var(--mat-form-field-outlined-container-shape, var(--mat-sys-corner-extra-small));
+  }
+
+  // Con la etiqueta flotando, el borde superior lo pintan los trozos (para dejar el hueco)
+  .mdc-notched-outline--notched::after {
+    border-top-color: transparent;
+  }
+
+  .mat-mdc-notch-piece {
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+  }
+
+  .mdc-notched-outline:not(.mdc-notched-outline--notched) .mat-mdc-notch-piece {
+    border-top-color: transparent !important;
+  }
+}
+
+/*
+ * Diálogos con título: Material deja el contenido sin margen superior y con desplazamiento propio, así que
+ * la etiqueta flotante del primer campo (que sobresale unos 7 px por encima) se recortaba.
+ */
+.mat-mdc-dialog-container.mat-mdc-dialog-container .mat-mdc-dialog-title + .mat-mdc-dialog-content {
+  padding-top: 8px;
 }

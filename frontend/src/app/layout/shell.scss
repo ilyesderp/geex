@@ -18,6 +18,7 @@
 }
 
 .barra__marca {
+  flex: none;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -27,7 +28,11 @@
   height: 36px;
 }
 
+// El título del apartado es lo único que cede espacio: se acorta con «…» antes de empujar el avatar
+// fuera de la pantalla en móviles estrechos
 .barra__modulo {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -36,11 +41,20 @@
   letter-spacing: 0.01em;
 
   mat-icon {
+    flex: none;
     color: var(--geex-turquesa);
+  }
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 .barra__derecha {
+  flex: none;
   margin-left: auto;
   display: flex;
   align-items: center;
