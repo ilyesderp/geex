@@ -5,7 +5,8 @@ import { contrasenaNueva, Credenciales, enlaceDelCorreo, iniciarSesion, sinDesbo
  * Recorridos clave de la fase 0, en orden: cada prueba parte del estado que deja la anterior
  * (instalación → invitación → edición concurrente → revocación de acceso → móvil).
  */
-test.describe.configure({ mode: 'serial' });
+// Sin reintentos: cada prueba depende del estado que deja la anterior (reintentar empezaría por instalar otra vez)
+test.describe.configure({ mode: 'serial', retries: 0 });
 
 const titular: Credenciales = { email: 'titular@despacho-e2e.test', contrasena: contrasenaNueva() };
 const gestor: Credenciales = { email: 'gestor@despacho-e2e.test', contrasena: contrasenaNueva() };
@@ -50,11 +51,12 @@ test('invitación: el titular invita a un gestor, que activa su cuenta desde el 
   await dialogo.getByLabel('Nombre').fill('Luis');
   await dialogo.getByLabel('Apellidos').fill('Gestor');
   await dialogo.getByLabel('Correo electrónico').fill(gestor.email);
+  const enviadaEn = new Date();
   await dialogo.getByRole('button', { name: 'Enviar invitación' }).click();
   await expect(page.getByText(gestor.email, { exact: true })).toBeVisible();
 
   await page.context().clearCookies();
-  await page.goto(await enlaceDelCorreo(gestor.email, 'activar'));
+  await page.goto(await enlaceDelCorreo(gestor.email, 'activar', enviadaEn));
   await expect(page.getByRole('heading', { name: 'Activa tu cuenta' })).toBeVisible();
   await page.locator('#contrasena').fill(gestor.contrasena);
   await page.locator('#repetir').fill(gestor.contrasena);
@@ -100,10 +102,19 @@ test('revocación: al desactivar al gestor pierde el acceso al instante', async 
 
   // El token del gestor (en memoria, sin recargar la página) aún no ha caducado, pero el servidor ya lo
   // rechaza en su siguiente acción, y la aplicación le lleva al inicio de sesión
-  const rechazo = paginaGestor.waitForResponse((r) => r.url().includes('/api/') && r.status() === 401);
+  // Se lee la respuesta en la red (route.fetch): la aplicación navega al login enseguida y el navegador
+  // descartaría el cuerpo antes de poder leerlo con waitForResponse
+  const codigos: string[] = [];
+  await paginaGestor.route('**/api/despacho', async (ruta) => {
+    const respuesta = await ruta.fetch();
+    if (respuesta.status() === 401) {
+      codigos.push((await respuesta.json()).codigo);
+    }
+    await ruta.fulfill({ response: respuesta });
+  });
   await paginaGestor.getByRole('link', { name: /Configuración/ }).first().click();
-  expect((await (await rechazo).json()).codigo).toBe('SESION_REVOCADA');
   await expect(paginaGestor).toHaveURL(/\/login/);
+  expect(codigos).toContain('SESION_REVOCADA');
 });
 
 test('móvil: las pantallas principales caben en 390 px sin desplazamiento horizontal', async ({ page }) => {

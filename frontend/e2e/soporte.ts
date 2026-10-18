@@ -23,12 +23,17 @@ export async function iniciarSesion(page: Page, c: Credenciales): Promise<void> 
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Buen');
 }
 
-/** Ruta (con el token) del último enlace de un tipo enviado a un correo, leída de Mailpit. */
-export async function enlaceDelCorreo(destinatario: string, tipo: 'activar' | 'restablecer'): Promise<string> {
+/**
+ * Ruta (con el token) del enlace de un tipo enviado a un correo DESPUÉS de `desde`, leída de Mailpit. Los
+ * correos se envían en segundo plano tras la respuesta, así que se espera a que llegue; y se ignoran los de
+ * ejecuciones anteriores (en local Mailpit conserva los correos a la misma dirección).
+ */
+export async function enlaceDelCorreo(destinatario: string, tipo: 'activar' | 'restablecer', desde: Date): Promise<string> {
   for (let intento = 0; intento < 20; intento++) {
     const lista = await (await fetch(`${MAILPIT}/api/v1/messages?limit=50`)).json();
-    const mensaje = lista.messages?.find((m: { To: { Address: string }[] }) =>
-      m.To.some((t) => t.Address.toLowerCase() === destinatario.toLowerCase()));
+    const mensaje = lista.messages?.find((m: { To: { Address: string }[]; Created: string }) =>
+      m.To.some((t) => t.Address.toLowerCase() === destinatario.toLowerCase())
+      && new Date(m.Created).getTime() >= desde.getTime() - 1000);
     if (mensaje) {
       const detalle = await (await fetch(`${MAILPIT}/api/v1/message/${mensaje.ID}`)).json();
       const enlace = (detalle.Text as string).match(new RegExp(`https?://\\S+/${tipo}\\?token=[\\w-]+`));

@@ -31,6 +31,14 @@ spring:
   mail:
     host: ${GEEX_MAIL_HOST:localhost}
     port: ${GEEX_MAIL_PORT:1025}
+    properties:
+      # Nombre con el que se presenta al servidor (EHLO). Sin él, JavaMail averigua el nombre del equipo
+      # con una búsqueda DNS inversa que en algunos equipos tarda varios segundos en cada envío.
+      mail.smtp.localhost: ${GEEX_MAIL_EHLO:localhost}
+      # Que un servidor de correo que no responde no deje hilos colgados
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
   modulith:
     events:
       # La tabla event_publication la crea Flyway (V1); el rol de la aplicación no puede crear tablas
