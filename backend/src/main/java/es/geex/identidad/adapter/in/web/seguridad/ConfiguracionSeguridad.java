@@ -43,7 +43,7 @@ class ConfiguracionSeguridad {
     private static final Set<String> METODOS_SEGUROS = Set.of("GET", "HEAD", "OPTIONS", "TRACE");
 
     @Bean
-    SecurityFilterChain cadenaSeguridad(HttpSecurity http) throws Exception {
+    SecurityFilterChain cadenaSeguridad(HttpSecurity http, ComprobadorAccesoVigente comprobador) throws Exception {
         http
                 .csrf(csrf -> csrf
                         .requireCsrfProtectionMatcher(ConfiguracionSeguridad::cookieSinCabeceraPropia)
@@ -69,7 +69,7 @@ class ConfiguracionSeguridad {
                         new JwtAuthenticationToken(token,
                                 List.of(new SimpleGrantedAuthority("ROL_" + token.getClaimAsString(ClaimsGeex.ROL))),
                                 token.getSubject()))))
-                .addFilterAfter(new FiltroContextoEjecucion(), BearerTokenAuthenticationFilter.class);
+                .addFilterAfter(new FiltroContextoEjecucion(comprobador), BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 

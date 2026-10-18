@@ -7,6 +7,10 @@ npm ci
 npm start          # http://localhost:4200 (reenvía /api al backend en :8080)
 npm test           # Vitest
 npm run lint       # ESLint (angular-eslint)
+npm run e2e        # Playwright: flujos clave en un navegador real (necesita la aplicación completa
+                   # arrancada sobre una instalación vacía; en CI lo hace el workflow «E2E»)
+npm run e2e:visual # capturas de referencia + accesibilidad (axe) en la imagen Docker de Playwright;
+                   # requiere «npx ng build»; para aceptar un cambio visual: -- --update-snapshots
 npm run build      # compilación de producción
 ```
 

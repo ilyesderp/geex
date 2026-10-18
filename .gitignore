@@ -40,6 +40,8 @@ frontend/coverage/
 frontend/src/app/api/generated/
 frontend/test-results/
 frontend/playwright-report/
+frontend/test-results-visual/
+frontend/playwright-report-visual/
 
 # ── IDEs y sistema ──
 .idea/

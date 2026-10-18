@@ -17,7 +17,14 @@
   revoked. The row is locked (`SELECT … FOR UPDATE`), so of N simultaneous refreshes with the same
   token exactly one succeeds. `ConcurrenciaTest` checks this.
 - **Revocation.** Logging out revokes the family. Changing or resetting the password increments
-  the user's `versionToken`, so no existing session can be renewed. Access tokens expire within 15 minutes.
+  the user's `versionToken`, so no existing session can be renewed.
+- **Instant revocation of access tokens (added 2026-10).** A stateless JWT normally stays valid until it
+  expires, so deactivating someone or changing their role would only take effect within 15 minutes.
+  Every request therefore also checks that the user is still active, still a member of that firm with
+  the same role, and on the same `versionToken`; otherwise it gets 401 `SESION_REVOCADA`. The result is
+  cached for 30 seconds and the cache is cleared after every change, so the effect is immediate on one
+  server. Trade-off: one cached lookup per request; with several servers the cache would need to be
+  shared (Redis) or the delay is up to 30 seconds.
 - **Passwords:**
   - Argon2id hashing
   - minimum 12 characters (NIST SP 800-63B: length over composition rules)

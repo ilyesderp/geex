@@ -21,6 +21,10 @@ The data is highly sensitive: passports, residence permits, criminal records. A 
 - **`DataSourceMultiDespacho` sets both variables on every connection checkout**, from a Java 25
   `ScopedValue` (`ContextoEjecucion`). They are always set, even to empty, so a pooled connection
   can never carry over another request's tenant.
+- **Identity tables are covered too.** Users can belong to several firms, so `usuarios` rows are visible
+  only to the firms they are members of; `sesiones_refresco` and `tokens_un_uso` only to their firm (and
+  password-reset links, which have no firm, only in system mode). Looking a user up by email (login,
+  inviting someone who already works at another firm) runs in system mode in its own transaction.
 - **The tenant always comes from the signed JWT** (`did` claim), never from request parameters.
 - **System mode is entered only explicitly**, in adapters (`ContextoEjecucion.comoSistema(...)`),
   never from user input.

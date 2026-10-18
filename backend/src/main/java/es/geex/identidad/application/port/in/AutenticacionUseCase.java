@@ -1,6 +1,8 @@
 package es.geex.identidad.application.port.in;
 
 import es.geex.compartido.domain.DespachoId;
+import es.geex.compartido.domain.Rol;
+import es.geex.compartido.domain.UsuarioId;
 import java.time.Instant;
 
 /**
@@ -19,6 +21,14 @@ public interface AutenticacionUseCase {
     void cerrarSesion(String tokenRefresco);
 
     ResultadoSesion cambiarDespacho(DespachoId destino, String tokenRefrescoActual, Origen origen);
+
+    /**
+     * Si un token de acceso sigue siendo válido para el estado actual: usuario activo, misma versión de
+     * contraseña, y membresía activa en ese despacho con el mismo rol. Se comprueba en cada petición para
+     * que desactivar a alguien, cambiarle el rol o cambiar la contraseña surta efecto de inmediato, sin
+     * esperar a que caduque el token (15 minutos).
+     */
+    boolean consultarAccesoVigente(UsuarioId usuario, DespachoId despacho, Rol rol, int versionToken);
 
     record Credenciales(String email, String contrasena, Origen origen) {
     }

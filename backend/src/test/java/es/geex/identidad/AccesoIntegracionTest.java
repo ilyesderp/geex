@@ -132,6 +132,26 @@ class AccesoIntegracionTest extends PruebaIntegracion {
     }
 
     @Test
+    void desactivar_a_alguien_o_cambiarle_el_rol_corta_su_acceso_al_instante() {
+        Sesion gestor = altaUsuario(sesionTitular, "GESTOR");
+        Sesion administrativo = altaUsuario(sesionTitular, "ADMINISTRATIVO");
+        assertThat(get("/api/yo", gestor.token()).estado()).isEqualTo(200);
+        assertThat(get("/api/yo", administrativo.token()).estado()).isEqualTo(200);
+
+        post("/api/usuarios/" + usuarioId(gestor) + "/desactivar", sesionTitular.token(), null);
+        var trasDesactivar = get("/api/yo", gestor.token());
+        assertThat(trasDesactivar.estado()).as("el token sigue sin caducar, pero ya no vale").isEqualTo(401);
+        assertThat(trasDesactivar.codigoError()).isEqualTo("SESION_REVOCADA");
+
+        String idAdministrativo = usuarioId(administrativo);
+        put("/api/usuarios/" + idAdministrativo + "/rol", sesionTitular.token(), "{\"rol\":\"ABOGADO\"}");
+        assertThat(get("/api/yo", administrativo.token()).codigoError())
+                .as("un token con el rol antiguo ya no vale").isEqualTo("SESION_REVOCADA");
+
+        assertThat(get("/api/yo", sesionTitular.token()).estado()).as("los demás siguen dentro").isEqualTo(200);
+    }
+
+    @Test
     void tras_cinco_intentos_fallidos_la_cuenta_se_bloquea_aunque_luego_acierte() {
         for (int i = 0; i < 5; i++) {
             var fallo = post("/api/auth/login", null,

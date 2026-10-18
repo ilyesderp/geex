@@ -32,7 +32,7 @@
     </div>
 
     @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-    <div class="geex-tabla-contenedor">
+    <div class="geex-tabla-contenedor" tabindex="0" role="region" aria-label="Registro de actividad">
       <table mat-table [dataSource]="entradas()" class="geex-tabla">
         <ng-container matColumnDef="ocurridoEn">
           <th mat-header-cell *matHeaderCellDef>Fecha y hora</th>
