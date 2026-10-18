@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import es.geex.compartido.adapter.contexto.ContextoEjecucion;
 import es.geex.compartido.domain.DespachoId;
+import es.geex.compartido.domain.EventoAuditable;
 import es.geex.compartido.domain.Rol;
 import es.geex.compartido.domain.UsuarioId;
 import es.geex.identidad.application.port.in.AutenticacionUseCase;
@@ -47,30 +48,20 @@ class ComprobadorAccesoVigente {
                 autenticacion.getObject().consultarAccesoVigente(usuario, despacho, rol, versionToken)));
     }
 
-    // Tras el commit: si se vaciara antes, otra petición podría volver a guardar el estado antiguo.
-
+    /**
+     * Tras el commit de cualquier cambio que afecte al acceso (si se vaciara antes, otra petición podría
+     * volver a guardar el estado antiguo).
+     */
     @TransactionalEventListener(fallbackExecution = true)
-    void alDesactivar(AccesoDesactivado evento) {
-        cache.invalidateAll();
+    void alRegistrarseUnEvento(EventoAuditable evento) {
+        if (cambiaElAcceso(evento)) {
+            cache.invalidateAll();
+        }
     }
 
-    @TransactionalEventListener(fallbackExecution = true)
-    void alReactivar(AccesoReactivado evento) {
-        cache.invalidateAll();
-    }
-
-    @TransactionalEventListener(fallbackExecution = true)
-    void alCambiarRol(RolCambiado evento) {
-        cache.invalidateAll();
-    }
-
-    @TransactionalEventListener(fallbackExecution = true)
-    void alCambiarContrasena(ContrasenaCambiada evento) {
-        cache.invalidateAll();
-    }
-
-    @TransactionalEventListener(fallbackExecution = true)
-    void alRestablecerContrasena(ContrasenaRestablecida evento) {
-        cache.invalidateAll();
+    private static boolean cambiaElAcceso(EventoAuditable evento) {
+        return evento instanceof AccesoDesactivado || evento instanceof AccesoReactivado
+                || evento instanceof RolCambiado || evento instanceof ContrasenaCambiada
+                || evento instanceof ContrasenaRestablecida;
     }
 }
